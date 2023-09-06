@@ -1,0 +1,11 @@
+the user should be able to view all pokemon
+the user should be able to sort pokemon by region, name, id 
+the user should be able to filter pokemon by region, type(s)
+the user should be able to search for pokemon full name, part of the name
+the user should be able to view all evolutions of a pokemon when on the pokemon's info page
+the user should be able to switch bettween pokemon and berries tab
+the user should be able to view all berries
+the user should be able to view each berry's info
+
+extra: better search query using || and && and adding the ability to search by other pokemon info (TBD)
+    eg: attack = 'thunder shock' && name != pikatchu
