@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex/screens/pokemon_home.dart';
+
 
 void main() {
   runApp(
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           title: const Text('Pokedex'),
         ),
-        body: ...,
+        body: const PokemonHomeScreen(),
       ),
     );
   }
