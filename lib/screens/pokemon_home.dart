@@ -12,7 +12,7 @@ class PokemonHomeScreen extends StatefulWidget {
 }
 
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
-  var _isGettingPokemonNumber = true;
+  var _isGettingPokemonCount = true;
   int? pokemonNumber;
   var _error = false;
 
@@ -22,12 +22,12 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       final response = await http.get(url);
       pokemonNumber = json.decode(response.body)['count'];
       setState(() {
-        _isGettingPokemonNumber = false;
+        _isGettingPokemonCount = false;
       });
     } catch (e) {
       setState(() {
         _error = true;
-        _isGettingPokemonNumber = false;
+        _isGettingPokemonCount = false;
       });
     }
   }
@@ -42,7 +42,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   Widget build(BuildContext context) {
     Widget content;
 
-    if (_isGettingPokemonNumber) {
+    if (_isGettingPokemonCount) {
       content = const CircularProgressIndicator();
     } else if (_error) {
       content = const Text('pokemon_home error');
@@ -50,6 +50,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       content = PokemonGrid(pokemonNumber: pokemonNumber!);
     }
 
-    return Center(child: SingleChildScrollView(child: content));
+    return Center(child: content);
   }
 }
