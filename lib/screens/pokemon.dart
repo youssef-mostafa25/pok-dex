@@ -99,6 +99,13 @@ class _PokemonScreenState extends State<PokemonScreen> {
             const Text('No evoloution chain exists for this pokemon!');
       }
     }
+    Widget image = Image.network(
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png',
+      height: 300,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.question_mark),
+    );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 17, 0),
@@ -124,11 +131,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
               ),
               Hero(
                 tag: widget.pokemon['id'],
-                child: Image.network(
-                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png',
-                  height: 300,
-                  fit: BoxFit.cover,
-                ),
+                child: image,
               ),
               content,
             ],

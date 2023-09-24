@@ -36,6 +36,7 @@ class _PokemonItemState extends State<PokemonItem> {
       if (mounted) {
         setState(() {
           _error = true;
+          print(e);
         });
       }
     }
@@ -44,18 +45,18 @@ class _PokemonItemState extends State<PokemonItem> {
   @override
   Widget build(BuildContext context) {
     _getPokemon();
-    Widget image;
+    Widget image = Image.network(
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png',
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.question_mark),
+    );
     Widget text;
     if (pokemon != null) {
       if (widget.isHero) {
         image = Hero(
           tag: pokemon!['id'],
-          child: Image.network(
-              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png'),
+          child: image,
         );
-      } else {
-        image = Image.network(
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png');
       }
       text = Text(pokemon!['name']);
     } else {
