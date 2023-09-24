@@ -12,49 +12,44 @@ class PokemonHomeScreen extends StatefulWidget {
 }
 
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
-  var _isGettingPokemon = true;
-  List? pokedexes;
-  // String? _pokedexName;
-  // String? _pokedexNumber;
+  var _isGettingPokemonNumber = true;
+  int? pokemonNumber;
   var _error = false;
 
-  void _getPokemon() async {
+  void _getPokemonNumber() async {
     try {
-      final url = Uri.https('pokeapi.co', 'api/v2/pokedex/');
+      final url = Uri.https('pokeapi.co', 'api/v2/pokemon/');
       final response = await http.get(url);
-      pokedexes = json.decode(response.body)['results'];
+      pokemonNumber = json.decode(response.body)['count'];
       setState(() {
-        _isGettingPokemon = false;
+        _isGettingPokemonNumber = false;
       });
     } catch (e) {
       setState(() {
         _error = true;
-        _isGettingPokemon = false;
+        _isGettingPokemonNumber = false;
       });
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getPokemonNumber();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _getPokemon();
     Widget content;
 
-    if (_isGettingPokemon) {
+    if (_isGettingPokemonNumber) {
       content = const CircularProgressIndicator();
     } else if (_error) {
-      content = const Text('Something went terribly wrong');
+      content = const Text('pokemon_home error');
     } else {
-      content = Column(
-        children: [
-          for (final pokedex in pokedexes!)
-            PokemonGrid(
-                pokedexName: pokedex["name"]!,
-                pokedexNumber: pokedex["url"]!
-                    .split('/')[pokedex["url"]!.split('/').length - 2]),
-        ],
-      );
+      content = PokemonGrid(pokemonNumber: pokemonNumber!);
     }
 
-    return SingleChildScrollView(child: Center(child: content));
+    return Center(child: SingleChildScrollView(child: content));
   }
 }

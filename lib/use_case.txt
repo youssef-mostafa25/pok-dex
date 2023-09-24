@@ -1,6 +1,6 @@
 the user should be able to view all pokemon
-the user should be able to sort pokemon by pokedex, name, id 
-the user should be able to filter pokemon by region, type(s)
+the user should be able to sort pokemon by name, id 
+the user should be able to filter pokemon by pokedex, region, type(s), color
 the user should be able to search for pokemon full name, part of the name
 the user should be able to view all evolutions of a pokemon when on the pokemon's info page
 
