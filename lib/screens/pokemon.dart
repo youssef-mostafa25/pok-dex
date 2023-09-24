@@ -68,14 +68,18 @@ class _PokemonScreenState extends State<PokemonScreen> {
         ],
       );
 
-      setState(() {
-        _isGettingEvoChain = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingEvoChain = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = true;
-        _isGettingEvoChain = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = true;
+          _isGettingEvoChain = false;
+        });
+      }
     }
   }
 

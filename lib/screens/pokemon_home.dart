@@ -21,14 +21,18 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       final url = Uri.https('pokeapi.co', 'api/v2/pokemon-species/');
       final response = await http.get(url);
       pokemonNumber = json.decode(response.body)['count'];
-      setState(() {
-        _isGettingPokemonCount = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingPokemonCount = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = true;
-        _isGettingPokemonCount = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = true;
+          _isGettingPokemonCount = false;
+        });
+      }
     }
   }
 

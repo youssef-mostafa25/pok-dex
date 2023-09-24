@@ -27,13 +27,17 @@ class _PokemonItemState extends State<PokemonItem> {
       final url = Uri.https(
           'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
       final response = await http.get(url);
-      setState(() {
-        pokemon = jsonDecode(response.body);
-      });
+      if (mounted) {
+        setState(() {
+          pokemon = jsonDecode(response.body);
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = true;
-      });
+      if (mounted) {
+        setState(() {
+          _error = true;
+        });
+      }
     }
   }
 
