@@ -4,10 +4,10 @@ import 'package:pokedex/widgets/pokemon_item.dart';
 class PokemonGrid extends StatelessWidget {
   const PokemonGrid({
     super.key,
-    required this.pokemonNumber,
+    required this.pokemonCount,
   });
 
-  final int pokemonNumber;
+  final int pokemonCount;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class PokemonGrid extends StatelessWidget {
                 fromPokemonHomeScreen: true,
               );
             },
-            childCount: pokemonNumber, // Total number of items in the grid
+            childCount: pokemonCount, // Total number of items in the grid
           ),
         ),
       ],

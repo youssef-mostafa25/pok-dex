@@ -47,7 +47,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     } else if (_error) {
       content = const Text('pokemon_home error');
     } else {
-      content = PokemonGrid(pokemonNumber: pokemonNumber!);
+      content = PokemonGrid(pokemonCount: pokemonNumber!);
     }
 
     return Center(child: content);
