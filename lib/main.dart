@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: const Color.fromARGB(255, 255, 17, 0),
           foregroundColor: Colors.white,
           title: const Text('Pokedéx'),
+          centerTitle: true,
         ),
         body: const PokemonHomeScreen(),
       ),

@@ -18,7 +18,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
 
   void _getPokemonNumber() async {
     try {
-      final url = Uri.https('pokeapi.co', 'api/v2/pokemon/');
+      final url = Uri.https('pokeapi.co', 'api/v2/pokemon-species/');
       final response = await http.get(url);
       pokemonNumber = json.decode(response.body)['count'];
       setState(() {
@@ -42,10 +42,10 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   Widget build(BuildContext context) {
     Widget content;
 
-    if (_isGettingPokemonCount) {
-      content = const CircularProgressIndicator();
-    } else if (_error) {
+    if (_error) {
       content = const Text('pokemon_home error');
+    } else if (_isGettingPokemonCount) {
+      content = const CircularProgressIndicator();
     } else {
       content = PokemonGrid(pokemonCount: pokemonNumber!);
     }

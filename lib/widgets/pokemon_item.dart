@@ -8,11 +8,11 @@ class PokemonItem extends StatefulWidget {
   const PokemonItem({
     super.key,
     required this.pokemonIndex,
-    required this.fromPokemonHomeScreen,
+    required this.isHero,
   });
 
   final int pokemonIndex;
-  final bool fromPokemonHomeScreen;
+  final bool isHero;
 
   @override
   State<PokemonItem> createState() => _PokemonItemState();
@@ -24,8 +24,8 @@ class _PokemonItemState extends State<PokemonItem> {
 
   void _getPokemon() async {
     try {
-      final url =
-          Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.pokemonIndex}/');
+      final url = Uri.https(
+          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
       final response = await http.get(url);
       setState(() {
         pokemon = jsonDecode(response.body);
@@ -43,14 +43,17 @@ class _PokemonItemState extends State<PokemonItem> {
     Widget image;
     Widget text;
     if (pokemon != null) {
-      if (widget.fromPokemonHomeScreen) {
+      if (widget.isHero) {
         image = Hero(
-            tag: pokemon!['id'],
-            child: Image.network(pokemon!['sprites']['front_default']));
+          tag: pokemon!['id'],
+          child: Image.network(
+              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png'),
+        );
       } else {
-        image = Image.network(pokemon!['sprites']['front_default']);
+        image = Image.network(
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png');
       }
-      text = Text(pokemon!['species']['name']);
+      text = Text(pokemon!['name']);
     } else {
       image = const CircularProgressIndicator();
       text = const Text('loading...');
@@ -63,12 +66,14 @@ class _PokemonItemState extends State<PokemonItem> {
     return GestureDetector(
       onTap: () {
         if (_error || pokemon == null) return;
-        if (!widget.fromPokemonHomeScreen) Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PokemonScreen(pokemon: pokemon!)),
-        );
+
+        if (widget.isHero) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => PokemonScreen(pokemon: pokemon!)));
+        } else {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => PokemonScreen(pokemon: pokemon!)));
+        }
       },
       child: Container(
         decoration: const BoxDecoration(

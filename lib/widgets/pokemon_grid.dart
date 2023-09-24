@@ -22,7 +22,7 @@ class PokemonGrid extends StatelessWidget {
               // Build each grid item using a container with a colored box
               return PokemonItem(
                 pokemonIndex: index + 1,
-                fromPokemonHomeScreen: true,
+                isHero: true,
               );
             },
             childCount: pokemonCount, // Total number of items in the grid

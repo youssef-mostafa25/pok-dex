@@ -21,91 +21,56 @@ class _PokemonScreenState extends State<PokemonScreen> {
 
   void getEvoloution() async {
     try {
-      var url = Uri.https('pokeapi.co', 'api/v2/evolution-chain/');
-      var response = await http.get(url);
-      var result = jsonDecode(response.body);
-      var lowerBound = 0;
-      var upperBound = result['count'];
-      var size = upperBound - lowerBound;
-      while (size > 0) {
-        final index = (lowerBound + upperBound) ~/ 2;
-        url = Uri.https('pokeapi.co', 'api/v2/evolution-chain/$index/');
-        response = await http.get(url);
-        result = jsonDecode(response.body)['chain'];
+      final evoloutionUrl = widget.pokemon['evolution_chain']['url'];
+      List<String> segments = evoloutionUrl.split("/");
+      String evoloutionIndex = segments[segments.length - 2];
 
-        var smallUrl = result['species']['url'];
-        List<String> segments = smallUrl.split("/");
-        int smallID = int.parse(segments[segments.length - 2]);
+      final url =
+          Uri.https('pokeapi.co', 'api/v2/evolution-chain/$evoloutionIndex/');
+      final response = await http.get(url);
+      final result = jsonDecode(response.body)['chain'];
 
-        if (result['evolves_to'].isNotEmpty) {
-          result = result['evolves_to'];
-          while ((result[0]['evolves_to']).isNotEmpty) {
-            result = result[0]['evolves_to'];
-          }
+      List<List<Widget>> chains = [];
+      for (int i = 0; i < result['evolves_to'].length; i++) {
+        List<Widget> chain = [];
+        var tempUrl = result['species']['url'];
+        List<String> segments = tempUrl.split("/");
+        int tempIndex = int.parse(segments[segments.length - 2]);
+        chain.add(PokemonItem(
+          pokemonIndex: tempIndex,
+          isHero: false,
+        ));
+        chain.add(const Icon(Icons.arrow_right_alt_rounded));
+        var tempResult = result['evolves_to'];
+        while (tempResult.isNotEmpty) {
+          tempUrl = tempResult[i]['species']['url'];
+          segments = tempUrl.split("/");
+          tempIndex = int.parse(segments[segments.length - 2]);
+          chain.add(PokemonItem(
+            pokemonIndex: tempIndex,
+            isHero: false,
+          ));
+          chain.add(const Icon(Icons.arrow_right_alt_rounded));
+          tempResult = tempResult[i]['evolves_to'];
         }
-
-        String bigUrl;
-        if (result is List) {
-          bigUrl = result[0]['species']['url'];
-        } else {
-          bigUrl = result['species']['url'];
-        }
-        segments = bigUrl.split("/");
-        int bigID = int.parse(segments[segments.length - 2]);
-
-        final id = widget.pokemon['id'].toInt();
-
-        if (id < smallID) {
-          upperBound = index;
-          if (upperBound - lowerBound == size) lowerBound++;
-          continue;
-        } else if (id > bigID) {
-          lowerBound = index;
-          if (upperBound - lowerBound == size) lowerBound++;
-          continue;
-        } else if (id >= smallID && id <= bigID) {
-          result = jsonDecode(response.body)['chain'];
-
-          List<Widget> chain = [];
-
-          while (result.isNotEmpty) {
-            String currUrl;
-            if (result is List) {
-              currUrl = result[0]['species']['url'];
-            } else {
-              currUrl = result['species']['url'];
-            }
-
-            segments = currUrl.split("/");
-            int currID = int.parse(segments[segments.length - 2]);
-            chain.add(
-              PokemonItem(
-                pokemonIndex: currID,
-                fromPokemonHomeScreen: false,
-              ),
-            );
-            chain.add(
-              const Icon(Icons.arrow_right_alt_rounded),
-            );
-            if (result is List) {
-              result = result[0]['evolves_to'];
-            } else {
-              result = result['evolves_to'];
-            }
-          }
-
-          if (chain.isNotEmpty) chain.removeLast();
-
-          evoloutionChain = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: chain,
-          );
-          setState(() {
-            _isGettingEvoChain = false;
-          });
-          return;
-        }
+        chain.removeLast();
+        chains.add(chain);
       }
+
+      evoloutionChain = Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          for (final chain in chains)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: chain,
+            )
+        ],
+      );
+
+      setState(() {
+        _isGettingEvoChain = false;
+      });
     } catch (e) {
       setState(() {
         _error = true;
@@ -118,48 +83,52 @@ class _PokemonScreenState extends State<PokemonScreen> {
   Widget build(BuildContext context) {
     getEvoloution();
     Widget content;
-    if (!_isGettingEvoChain) {
-      if (!_error) {
+    if (_error) {
+      content = const Text('Something went wrong');
+    } else {
+      if (_isGettingEvoChain) {
+        content = const Center(
+          child: CircularProgressIndicator(),
+        );
+      } else {
         content = evoloutionChain ??
             const Text('No evoloution chain exists for this pokemon!');
-      } else {
-        content = const Text('Something went wrong');
       }
-    } else {
-      content = const Center(
-        child: CircularProgressIndicator(),
-      );
     }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 17, 0),
         foregroundColor: Colors.white,
         title: const Text('Pokedéx'),
+        centerTitle: true,
       ),
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Text(
-              widget.pokemon['name'],
-              style: GoogleFonts.sedgwickAveDisplay(
-                  color: Colors.red, fontSize: 40, fontWeight: FontWeight.bold),
-            ),
-            Hero(
-              tag: widget.pokemon['id'],
-              child: Image.network(
-                widget.pokemon['sprites']['front_default'],
-                height: 300,
-                // width: double.infinity,
-                fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 30,
               ),
-            ),
-            content,
-          ],
+              Text(
+                widget.pokemon['name'],
+                style: GoogleFonts.sedgwickAveDisplay(
+                    color: Colors.red,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold),
+              ),
+              Hero(
+                tag: widget.pokemon['id'],
+                child: Image.network(
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png',
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              content,
+            ],
+          ),
         ),
       ),
     );
