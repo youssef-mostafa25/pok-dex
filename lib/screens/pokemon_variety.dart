@@ -8,25 +8,29 @@ class PokemonVarietyScreen extends StatelessWidget {
 
   final Map variety;
 
-  List<List<Map<String, bool>>> get _abilities {
+  List<List<Map<String, bool>>>? get _abilities {
     final List abilities = variety['abilities'];
+    if (abilities.isEmpty) return null;
     List<List<Map<String, bool>>> result = [];
     result.add([
       {'Ability Name': true},
       {'Slot': true}
     ]);
-    List<Map<String, bool>> list = [];
+    List<Map<String, bool>> list;
 
     for (final ability in abilities) {
+      list = [];
       list.add({ability['ability']['name']: false});
       list.add({ability['slot'].toString(): false});
+      result.add(list);
     }
 
     return result;
   }
 
-  List<List<Map<String, bool>>> get _moves {
+  List<List<Map<String, bool>>>? get _moves {
     final List moves = variety['moves'];
+    if (moves.isEmpty) return null;
     List<List<Map<String, bool>>> result = [];
     result.add([
       {'Ability Name': true},
@@ -34,10 +38,11 @@ class PokemonVarietyScreen extends StatelessWidget {
       {'Version Group': true},
       {'Level Learned At': true}
     ]);
-    List<Map<String, bool>> list = [];
+    List<Map<String, bool>> list;
 
     for (final move in moves) {
       for (int i = 0; i < move['version_group_details'].length; i++) {
+        list = [];
         list.add({move['move']['name']: false});
         list.add({
           move['version_group_details'][i]['move_learn_method']['name']: false
@@ -47,26 +52,30 @@ class PokemonVarietyScreen extends StatelessWidget {
         list.add({
           move['version_group_details'][i]['level_learned_at'].toString(): false
         });
+        result.add(list);
       }
     }
 
     return result;
   }
 
-  List<List<Map<String, bool>>> get _stats {
+  List<List<Map<String, bool>>>? get _stats {
     final List stats = variety['stats'];
+    if (stats.isEmpty) return null;
     List<List<Map<String, bool>>> result = [];
     result.add([
       {'Stat Name': true},
       {'Base Stat': true},
       {'Effort': true}
     ]);
-    List<Map<String, bool>> list = [];
+    List<Map<String, bool>> list;
 
     for (final stat in stats) {
+      list = [];
       list.add({stat['stat']['name']: false});
       list.add({stat['base_stat'].toString(): false});
       list.add({stat['effort'].toString(): false});
+      result.add(list);
     }
 
     return result;
@@ -74,18 +83,17 @@ class PokemonVarietyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final abilities = _abilities;
+    final moves = _moves;
+    final stats = _stats;
     Widget image = CachedNetworkImage(
-      imageUrl: variety['sprites']['front_default'],
-      placeholder: (context, url) => Image.asset(
-        'assets/images/poke_ball_icon.png',
-      ),
-      height: 300,
-      fit: BoxFit.cover,
-      errorWidget: (context, url, error) {
-        print('79 pokemon_variety!!!!!!!!!!!!!!!!!!!!!' + error.toString());
-        return const Icon(Icons.error);
-      },
-    );
+        imageUrl: variety['sprites']['front_default'],
+        placeholder: (context, url) => Image.asset(
+              'assets/images/poke_ball_icon.png',
+            ),
+        height: 300,
+        fit: BoxFit.cover,
+        errorWidget: (context, url, error) => const Icon(Icons.error));
 
     return Scaffold(
       appBar: AppBar(
@@ -111,21 +119,24 @@ class PokemonVarietyScreen extends StatelessWidget {
                 child: image,
               ),
 
-              //type with icon
+              // todo pokemon type with icon
 
               const SizedBox(height: 50),
-              PokemonTable(
-                entries: _abilities,
-                pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
-              ),
-              PokemonTable(
-                entries: _moves,
-                pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
-              ),
-              PokemonTable(
-                entries: _stats,
-                pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
-              ),
+              if (abilities != null)
+                PokemonTable(
+                  entries: abilities,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                ),
+              if (moves != null)
+                PokemonTable(
+                  entries: moves,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                ),
+              if (stats != null)
+                PokemonTable(
+                  entries: stats,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                ),
               const SizedBox(height: 70),
             ],
           ),

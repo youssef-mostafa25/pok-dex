@@ -44,13 +44,17 @@ class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
   Widget build(BuildContext context) {
     _getPokemon();
     Widget image = !_isGettingPokemon
-        ? CachedNetworkImage(
-            imageUrl: _variety!['sprites']['front_default'],
-            placeholder: (context, url) => Image.asset(
-              'assets/images/poke_ball_icon.png',
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          )
+        ? _variety!['sprites']['front_default'] == null
+            ? Image.asset(
+                'assets/images/poke_ball_icon.png',
+              )
+            : CachedNetworkImage(
+                imageUrl: _variety!['sprites']['front_default'],
+                placeholder: (context, url) => Image.asset(
+                  'assets/images/poke_ball_icon.png',
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              )
         : Image.asset('assets/images/poke_ball_icon.png');
     Widget text;
     if (_variety != null) {
