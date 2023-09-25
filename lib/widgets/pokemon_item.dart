@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/screens/pokemon.dart';
@@ -45,10 +46,12 @@ class _PokemonItemState extends State<PokemonItem> {
   @override
   Widget build(BuildContext context) {
     _getPokemon();
-    Widget image = Image.network(
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png',
-      errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.question_mark),
+    Widget image = CachedNetworkImage(
+      imageUrl:
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png",
+      progressIndicatorBuilder: (context, url, downloadProgress) =>
+          CircularProgressIndicator(value: downloadProgress.progress),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     Widget text;
     if (pokemon != null) {

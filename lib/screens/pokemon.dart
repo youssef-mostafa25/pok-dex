@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -99,13 +100,16 @@ class _PokemonScreenState extends State<PokemonScreen> {
             const Text('No evoloution chain exists for this pokemon!');
       }
     }
-    Widget image = Image.network(
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png',
+    Widget image = CachedNetworkImage(
+      imageUrl:
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png",
+      progressIndicatorBuilder: (context, url, downloadProgress) =>
+          CircularProgressIndicator(value: downloadProgress.progress),
       height: 300,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.question_mark),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 17, 0),
