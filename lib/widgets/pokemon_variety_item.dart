@@ -4,34 +4,28 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex/screens/pokemon.dart';
+import 'package:pokedex/screens/pokemon_variety.dart';
 
-class PokemonItem extends StatefulWidget {
-  const PokemonItem({
-    super.key,
-    required this.pokemonIndex,
-    required this.isHero,
-  });
+class PokemonVarietyItem extends StatefulWidget {
+  const PokemonVarietyItem({super.key, required this.entry});
 
-  final int pokemonIndex;
-  final bool isHero;
+  final int entry;
 
   @override
-  State<PokemonItem> createState() => _PokemonItemState();
+  State<PokemonVarietyItem> createState() => _PokemonVarietyItemState();
 }
 
-class _PokemonItemState extends State<PokemonItem> {
-  Map? _pokemon;
-  var _error = false;
+class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
+  Map? _variety;
+  bool _error = false;
 
   void _getPokemon() async {
     try {
-      final url = Uri.https(
-          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
+      final url = Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.entry}/');
       final response = await http.get(url);
       if (mounted) {
         setState(() {
-          _pokemon = jsonDecode(response.body);
+          _variety = jsonDecode(response.body);
         });
       }
     } catch (e) {
@@ -48,25 +42,24 @@ class _PokemonItemState extends State<PokemonItem> {
     _getPokemon();
     Widget image = CachedNetworkImage(
       imageUrl:
-          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png",
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.entry}.png",
       placeholder: (context, url) => Image.asset(
         'assets/images/poke_ball_icon.png',
       ),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     Widget text;
-    if (_pokemon != null) {
-      if (widget.isHero) {
-        image = Hero(
-          tag: _pokemon!['id'],
-          child: SizedBox(
-            width: 80,
-            child: image,
-          ),
-        );
-      }
+    if (_variety != null) {
+      image = Hero(
+        tag: _variety!['id'],
+        child: SizedBox(
+          width: 80,
+          height: 80,
+          child: image,
+        ),
+      );
       text = Text(
-        _pokemon!['name'],
+        _variety!['name'],
         style: GoogleFonts.handlee(),
       );
     } else {
@@ -79,17 +72,12 @@ class _PokemonItemState extends State<PokemonItem> {
       text = const Text('something\nwent wrong');
     }
     return GestureDetector(
-      onTap: () {
-        if (_error || _pokemon == null) return;
+      // onTap: () {
+      //   if (_error || _variety == null) return;
 
-        if (widget.isHero) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PokemonScreen(pokemon: _pokemon!)));
-        } else {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => PokemonScreen(pokemon: _pokemon!)));
-        }
-      },
+      //   Navigator.of(context).push(MaterialPageRoute(
+      //       builder: (context) => PokemonVarietyScreen(variety: _variety!)));
+      // },
       child: Container(
         decoration: const BoxDecoration(
           shape: BoxShape.circle, // Make it circular

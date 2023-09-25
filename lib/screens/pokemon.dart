@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:pokedex/static_data.dart';
 import 'package:pokedex/widgets/pokemon_item.dart';
 import 'package:pokedex/widgets/pokemon_table.dart';
+import 'package:pokedex/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonScreen extends StatefulWidget {
@@ -85,6 +86,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
           ),
           for (final chain in chains)
             Row(
+              // todo placeholder causes A RenderFlex overflowed by 1840 pixels on the right.
               mainAxisAlignment: MainAxisAlignment.center,
               children: chain,
             )
@@ -176,8 +178,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
           child: CircularProgressIndicator(),
         );
       } else {
-        evoloutionChain = optionalEvoloutionChain ??
-            const Text('No evoloution chain exists for this pokemon!');
+        evoloutionChain = optionalEvoloutionChain!;
       }
     }
     Widget image = CachedNetworkImage(
@@ -227,11 +228,23 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 pokemonColor: colorMap[widget.pokemon['color']['name']] ??
                     const Color.fromARGB(255, 255, 17, 0),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 70),
               evoloutionChain,
-              // varieties != null
-              //     ? PokemonGrid(pokemonVarieties: varieties)
-              //     : const Text('No Varities'),
+              const SizedBox(height: 70),
+              GradientText(
+                varieties != null ? 'Varities' : 'No Varities',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sedgwickAveDisplay(
+                  fontSize: 30.0,
+                ),
+                colors: const [
+                  Color(0xFFff00ff), // Pink
+                  Color(0xFF00ff00), // Green
+                  Color(0xFF0000ff), // Blue
+                ],
+              ),
+              if (varieties != null)
+                PokemonVarietiesSlider(entries: varieties!),
               const SizedBox(height: 80)
             ],
           ),
