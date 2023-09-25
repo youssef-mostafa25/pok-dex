@@ -24,6 +24,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
   Widget? optionalEvoloutionChain;
   var _isGettingEvoChain = true;
   var _error = false;
+  Widget? randomText;
+  List<int>? varieties;
 
   void getEvoloution() async {
     try {
@@ -156,9 +158,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
     return result.isNotEmpty ? result : null;
   }
 
-  Widget? randomText;
-  List<int>? varieties;
-
   @override
   void initState() {
     super.initState();
@@ -219,12 +218,24 @@ class _PokemonScreenState extends State<PokemonScreen> {
               randomText!,
               const SizedBox(height: 50),
               PokemonTable(
-                entries: {
-                  'Gen': widget.pokemon['generation']['name'],
-                  _eggGroups[0]: _eggGroups[1],
-                  'Growth Rate': widget.pokemon['growth_rate']['name'],
-                  'Habitat': widget.pokemon['habitat']['name'],
-                },
+                entries: [
+                  [
+                    const {'Gen': true},
+                    {widget.pokemon['generation']['name']: false}
+                  ],
+                  [
+                    {_eggGroups[0]: true},
+                    {_eggGroups[1]: false}
+                  ],
+                  [
+                    const {'Growth Rate': true},
+                    {widget.pokemon['growth_rate']['name']: false}
+                  ],
+                  [
+                    const {'Habitat': true},
+                    {widget.pokemon['habitat']['name']: false}
+                  ],
+                ],
                 pokemonColor: colorMap[widget.pokemon['color']['name']] ??
                     const Color.fromARGB(255, 255, 17, 0),
               ),

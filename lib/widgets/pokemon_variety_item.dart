@@ -17,6 +17,7 @@ class PokemonVarietyItem extends StatefulWidget {
 
 class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
   Map? _variety;
+  bool _isGettingPokemon = true;
   bool _error = false;
 
   void _getPokemon() async {
@@ -25,12 +26,14 @@ class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
       final response = await http.get(url);
       if (mounted) {
         setState(() {
+          _isGettingPokemon = false;
           _variety = jsonDecode(response.body);
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
+          _isGettingPokemon = false;
           _error = true;
         });
       }
@@ -40,14 +43,15 @@ class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
   @override
   Widget build(BuildContext context) {
     _getPokemon();
-    Widget image = CachedNetworkImage(
-      imageUrl:
-          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.entry}.png",
-      placeholder: (context, url) => Image.asset(
-        'assets/images/poke_ball_icon.png',
-      ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    );
+    Widget image = !_isGettingPokemon
+        ? CachedNetworkImage(
+            imageUrl: _variety!['sprites']['front_default'],
+            placeholder: (context, url) => Image.asset(
+              'assets/images/poke_ball_icon.png',
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          )
+        : Image.asset('assets/images/poke_ball_icon.png');
     Widget text;
     if (_variety != null) {
       image = Hero(
@@ -72,12 +76,12 @@ class _PokemonVarietyItemState extends State<PokemonVarietyItem> {
       text = const Text('something\nwent wrong');
     }
     return GestureDetector(
-      // onTap: () {
-      //   if (_error || _variety == null) return;
+      onTap: () {
+        if (_error || _variety == null) return;
 
-      //   Navigator.of(context).push(MaterialPageRoute(
-      //       builder: (context) => PokemonVarietyScreen(variety: _variety!)));
-      // },
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PokemonVarietyScreen(variety: _variety!)));
+      },
       child: Container(
         decoration: const BoxDecoration(
           shape: BoxShape.circle, // Make it circular
