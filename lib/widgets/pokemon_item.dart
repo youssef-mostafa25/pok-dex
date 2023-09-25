@@ -37,7 +37,6 @@ class _PokemonItemState extends State<PokemonItem> {
       if (mounted) {
         setState(() {
           _error = true;
-          print(e);
         });
       }
     }
@@ -49,8 +48,9 @@ class _PokemonItemState extends State<PokemonItem> {
     Widget image = CachedNetworkImage(
       imageUrl:
           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png",
-      progressIndicatorBuilder: (context, url, downloadProgress) =>
-          CircularProgressIndicator(value: downloadProgress.progress),
+      placeholder: (context, url) => Image.asset(
+        'assets/images/poke_ball_icon.png',
+      ),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     Widget text;
@@ -58,7 +58,11 @@ class _PokemonItemState extends State<PokemonItem> {
       if (widget.isHero) {
         image = Hero(
           tag: pokemon!['id'],
-          child: image,
+          child: SizedBox(
+            width: 80,
+            height: 80,
+            child: image,
+          ),
         );
       }
       text = Text(pokemon!['name']);
@@ -69,7 +73,7 @@ class _PokemonItemState extends State<PokemonItem> {
 
     if (_error) {
       image = const Icon(Icons.question_mark);
-      text = const Text('something went wrong');
+      text = const Text('something\nwent wrong');
     }
     return GestureDetector(
       onTap: () {
