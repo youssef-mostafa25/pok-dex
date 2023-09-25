@@ -11,24 +11,16 @@ class PokemonGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverGrid(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // Number of columns in the grid
-          ),
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              // Build each grid item using a container with a colored box
-              return PokemonItem(
-                pokemonIndex: index + 1,
-                isHero: true,
-              );
-            },
-            childCount: pokemonCount, // Total number of items in the grid
-          ),
-        ),
-      ],
+    return GridView.builder(
+      gridDelegate:
+          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+      itemBuilder: (context, index) {
+        return GridTile(
+            child: PokemonItem(
+          pokemonIndex: index + 1,
+          isHero: true,
+        ));
+      },
     );
   }
 }

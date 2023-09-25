@@ -106,9 +106,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
     }
   }
 
-  Widget? randomText;
-
-  Widget get randomFlavourText {
+  Widget get _randomFlavourText {
     final List flavorTextEntries = widget.pokemon['flavor_text_entries'];
     final int randomIndex = Random().nextInt(flavorTextEntries.length);
     Map randomMap = flavorTextEntries[randomIndex];
@@ -123,7 +121,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
     );
   }
 
-  List<String> get eggGroups {
+  List<String> get _eggGroups {
     final List eggGroupList = widget.pokemon['egg_groups'];
     List<String> result = [];
     result.add(eggGroupList.length > 1 ? 'Egg Groups' : 'Egg Group');
@@ -140,10 +138,30 @@ class _PokemonScreenState extends State<PokemonScreen> {
     return result;
   }
 
+  List<int>? get _varietiesList {
+    final List varietiesList = widget.pokemon['varieties'];
+    List<int> result = [];
+    List segments;
+    int index;
+    for (final variety in varietiesList) {
+      String url = variety['pokemon']['url'];
+      segments = url.split("/");
+      index = int.parse(segments[segments.length - 2]);
+      if (variety['is_default'] == false) {
+        result.add(index);
+      }
+    }
+    return result.isNotEmpty ? result : null;
+  }
+
+  Widget? randomText;
+  List<int>? varieties;
+
   @override
   void initState() {
     super.initState();
-    randomText = randomFlavourText;
+    varieties = _varietiesList;
+    randomText = _randomFlavourText;
   }
 
   @override
@@ -199,24 +217,21 @@ class _PokemonScreenState extends State<PokemonScreen> {
               ),
               randomText!,
               const SizedBox(height: 50),
-
               PokemonTable(
                 entries: {
                   'Gen': widget.pokemon['generation']['name'],
-                  eggGroups[0]: eggGroups[1],
+                  _eggGroups[0]: _eggGroups[1],
                   'Growth Rate': widget.pokemon['growth_rate']['name'],
                   'Habitat': widget.pokemon['habitat']['name'],
                 },
                 pokemonColor: colorMap[widget.pokemon['color']['name']] ??
                     const Color.fromARGB(255, 255, 17, 0),
               ),
-
               const SizedBox(height: 30),
-
               evoloutionChain,
-
-              //varieties
-
+              // varieties != null
+              //     ? PokemonGrid(pokemonVarieties: varieties)
+              //     : const Text('No Varities'),
               const SizedBox(height: 80)
             ],
           ),
