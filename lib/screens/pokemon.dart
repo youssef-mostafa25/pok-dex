@@ -12,9 +12,11 @@ import 'package:pokedex/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonScreen extends StatefulWidget {
-  const PokemonScreen({super.key, required this.pokemon});
+  const PokemonScreen(
+      {super.key, required this.pokemon, required this.isVarient});
 
   final Map pokemon;
+  final bool isVarient;
 
   @override
   State<PokemonScreen> createState() => _PokemonScreenState();
@@ -23,13 +25,38 @@ class PokemonScreen extends StatefulWidget {
 class _PokemonScreenState extends State<PokemonScreen> {
   Widget? optionalEvoloutionChain;
   var _isGettingEvoChain = true;
-  var _error = false;
+  var _errorEvolution = false;
   Widget? randomText;
   List<int>? varieties;
 
-  void getEvoloution() async {
+  Map? _pokemonSpecies;
+  var _errorPokemonSpecies = false;
+  var _isGettingPokemonSpecies = true;
+
+  void _getPokemonSpecies() async {
     try {
-      final evoloutionUrl = widget.pokemon['evolution_chain']['url'];
+      final url = Uri.https(
+          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemon['id']}/');
+      final response = await http.get(url);
+      if (mounted) {
+        setState(() {
+          _isGettingPokemonSpecies = false;
+          _pokemonSpecies = jsonDecode(response.body);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isGettingPokemonSpecies = false;
+          _errorPokemonSpecies = true;
+        });
+      }
+    }
+  }
+
+  void _getEvoloution() async {
+    try {
+      final evoloutionUrl = _pokemonSpecies!['evolution_chain']['url'];
       List<String> segments = evoloutionUrl.split("/");
       String evoloutionIndex = segments[segments.length - 2];
 
@@ -103,7 +130,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = true;
+          _errorEvolution = true;
           _isGettingEvoChain = false;
         });
       }
@@ -111,7 +138,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   Widget get _randomFlavourText {
-    final List flavorTextEntries = widget.pokemon['flavor_text_entries'];
+    final List flavorTextEntries = _pokemonSpecies!['flavor_text_entries'];
     final int randomIndex = Random().nextInt(flavorTextEntries.length);
     Map randomMap = flavorTextEntries[randomIndex];
     String randomFlavorText = randomMap['flavor_text'].replaceAll('\n', ' ');
@@ -126,7 +153,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   List<String> get _eggGroups {
-    final List eggGroupList = widget.pokemon['egg_groups'];
+    final List eggGroupList = _pokemonSpecies!['egg_groups'];
     List<String> result = [];
     result.add(eggGroupList.length > 1 ? 'Egg Groups' : 'Egg Group');
     if (eggGroupList.isEmpty) {
@@ -143,7 +170,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   List<int>? get _varietiesList {
-    final List varietiesList = widget.pokemon['varieties'];
+    final List varietiesList = _pokemonSpecies!['varieties'];
     List<int> result = [];
     List segments;
     int index;
@@ -158,31 +185,124 @@ class _PokemonScreenState extends State<PokemonScreen> {
     return result.isNotEmpty ? result : null;
   }
 
+  List<List<Map<String, bool>>>? get _abilities {
+    final List abilities = widget.pokemon['abilities'];
+    if (abilities.isEmpty) return null;
+    List<List<Map<String, bool>>> result = [];
+    result.add([
+      {'Ability Name': true},
+      {'Slot': true}
+    ]);
+    List<Map<String, bool>> list;
+
+    for (final ability in abilities) {
+      list = [];
+      list.add({ability['ability']['name']: false});
+      list.add({ability['slot'].toString(): false});
+      result.add(list);
+    }
+
+    return result;
+  }
+
+  List<List<Map<String, bool>>>? get _moves {
+    final List moves = widget.pokemon['moves'];
+    if (moves.isEmpty) return null;
+    List<List<Map<String, bool>>> result = [];
+    result.add([
+      {'Ability Name': true},
+      {'Move Learn Method': true},
+      {'Version Group': true},
+      {'Level Learned At': true}
+    ]);
+    List<Map<String, bool>> list;
+
+    for (final move in moves) {
+      for (int i = 0; i < move['version_group_details'].length; i++) {
+        list = [];
+        list.add({move['move']['name']: false});
+        list.add({
+          move['version_group_details'][i]['move_learn_method']['name']: false
+        });
+        list.add(
+            {move['version_group_details'][i]['version_group']['name']: false});
+        list.add({
+          move['version_group_details'][i]['level_learned_at'].toString(): false
+        });
+        result.add(list);
+      }
+    }
+
+    return result;
+  }
+
+  List<List<Map<String, bool>>>? get _stats {
+    final List stats = widget.pokemon['stats'];
+    if (stats.isEmpty) return null;
+    List<List<Map<String, bool>>> result = [];
+    result.add([
+      {'Stat Name': true},
+      {'Base Stat': true},
+      {'Effort': true}
+    ]);
+    List<Map<String, bool>> list;
+
+    for (final stat in stats) {
+      list = [];
+      list.add({stat['stat']['name']: false});
+      list.add({stat['base_stat'].toString(): false});
+      list.add({stat['effort'].toString(): false});
+      result.add(list);
+    }
+
+    return result;
+  }
+
   @override
   void initState() {
     super.initState();
-    varieties = _varietiesList;
-    randomText = _randomFlavourText;
+    _getPokemonSpecies();
+    if (!widget.isVarient) {
+      _getEvoloution();
+      varieties = _varietiesList;
+      randomText = _randomFlavourText;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    getEvoloution();
-    Widget evoloutionChain;
-    if (_error) {
-      evoloutionChain = const Text('Something went wrong');
-    } else {
-      if (_isGettingEvoChain) {
-        evoloutionChain = const Center(
-          child: CircularProgressIndicator(),
-        );
+    final abilities = _abilities;
+    final moves = _moves;
+    final stats = _stats;
+    Widget evoloutionChain = GradientText(
+      'No Evoloution Chain',
+      textAlign: TextAlign.center,
+      style: GoogleFonts.sedgwickAveDisplay(
+        fontSize: 30.0,
+      ),
+      colors: const [
+        Color.fromRGBO(117, 117, 117, 1), // Darker gray
+        Color.fromRGBO(158, 158, 158, 1), // Dark gray
+        Color.fromRGBO(189, 189, 189, 1), // Slightly lighter gray
+        Color.fromRGBO(189, 189, 189, 1), // Dark gray
+        Color.fromRGBO(158, 158, 158, 1), // Darker gray
+      ],
+    );
+    if (!widget.isVarient) {
+      if (_errorEvolution) {
+        evoloutionChain = const Text('Something went wrong');
       } else {
-        evoloutionChain = optionalEvoloutionChain!;
+        if (_isGettingEvoChain) {
+          evoloutionChain = const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          evoloutionChain = optionalEvoloutionChain!;
+        }
       }
     }
     Widget image = CachedNetworkImage(
-      imageUrl:
-          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemon['id']}.png",
+      imageUrl: widget.pokemon['sprites']['front_default'],
       placeholder: (context, url) => Image.asset(
         'assets/images/poke_ball_icon.png',
       ),
@@ -193,8 +313,10 @@ class _PokemonScreenState extends State<PokemonScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colorMap[widget.pokemon['color']['name']] ??
-            const Color.fromARGB(255, 255, 17, 0),
+        backgroundColor: _pokemonSpecies != null
+            ? colorMap[_pokemonSpecies!['color']['name']] ??
+                const Color.fromARGB(255, 255, 17, 0)
+            : Colors.grey[700],
         foregroundColor: Colors.white,
         title: Text(
           widget.pokemon['name'],
@@ -215,47 +337,70 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 tag: widget.pokemon['id'],
                 child: image,
               ),
-              randomText!,
+              if (!_isGettingPokemonSpecies && !_errorPokemonSpecies)
+                randomText!,
               const SizedBox(height: 50),
-              PokemonTable(
-                entries: [
-                  [
-                    const {'Gen': true},
-                    {widget.pokemon['generation']['name']: false}
+              if (_pokemonSpecies != null)
+                PokemonTable(
+                  entries: [
+                    [
+                      const {'Gen': true},
+                      {_pokemonSpecies!['generation']['name']: false}
+                    ],
+                    [
+                      {_eggGroups[0]: true},
+                      {_eggGroups[1]: false}
+                    ],
+                    [
+                      const {'Growth Rate': true},
+                      {_pokemonSpecies!['growth_rate']['name']: false}
+                    ],
+                    [
+                      const {'Habitat': true},
+                      {_pokemonSpecies!['habitat']['name']: false}
+                    ],
                   ],
-                  [
-                    {_eggGroups[0]: true},
-                    {_eggGroups[1]: false}
-                  ],
-                  [
-                    const {'Growth Rate': true},
-                    {widget.pokemon['growth_rate']['name']: false}
-                  ],
-                  [
-                    const {'Habitat': true},
-                    {widget.pokemon['habitat']['name']: false}
-                  ],
-                ],
-                pokemonColor: colorMap[widget.pokemon['color']['name']] ??
-                    const Color.fromARGB(255, 255, 17, 0),
-              ),
+                  pokemonColor: colorMap[_pokemonSpecies!['color']['name']] ??
+                      const Color.fromARGB(255, 255, 17, 0),
+                  tableName: 'Pokémon Info',
+                ),
+              const SizedBox(height: 70),
+              if (abilities != null)
+                PokemonTable(
+                  entries: abilities,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  tableName: 'Abilities',
+                ),
+              if (moves != null)
+                PokemonTable(
+                  entries: moves,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  tableName: 'Moves',
+                ),
+              if (stats != null)
+                PokemonTable(
+                  entries: stats,
+                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  tableName: 'Stats',
+                ),
               const SizedBox(height: 70),
               evoloutionChain,
               const SizedBox(height: 70),
-              GradientText(
-                varieties != null ? 'Varities' : 'No Varities',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.sedgwickAveDisplay(
-                  fontSize: 30.0,
+              if (!widget.isVarient)
+                GradientText(
+                  varieties != null ? 'Varities' : 'No Varities',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.sedgwickAveDisplay(
+                    fontSize: 30.0,
+                  ),
+                  colors: const [
+                    Color(0xFFff00ff), // Pink
+                    Color(0xFF00ff00), // Green
+                    Color(0xFF0000ff), // Blue
+                  ],
                 ),
-                colors: const [
-                  Color(0xFFff00ff), // Pink
-                  Color(0xFF00ff00), // Green
-                  Color(0xFF0000ff), // Blue
-                ],
-              ),
-              if (varieties != null)
-                PokemonVarietiesSlider(entries: varieties!),
+              if (!widget.isVarient && varieties != null)
+                PokemonVarietiesSliderRow(pokemonIndecies: varieties!),
               const SizedBox(height: 80)
             ],
           ),

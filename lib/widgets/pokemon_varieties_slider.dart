@@ -1,22 +1,25 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:pokedex/widgets/pokemon_variety_item.dart';
+import 'package:pokedex/widgets/pokemon_item.dart';
 
-class PokemonVarietiesSlider extends StatelessWidget {
-  const PokemonVarietiesSlider({super.key, required this.entries});
+class PokemonVarietiesSliderRow extends StatelessWidget {
+  const PokemonVarietiesSliderRow({super.key, required this.pokemonIndecies});
 
-  final List<int> entries;
+  final List<int> pokemonIndecies;
 
   @override
   Widget build(BuildContext context) {
-    return entries.length > 2
+    return pokemonIndecies.length > 2
         ? CarouselSlider(
             options: CarouselOptions(
               enlargeCenterPage: true,
               viewportFraction: 0.4,
             ),
-            items: entries.map((entry) {
-              return PokemonVarietyItem(entry: entry);
+            items: pokemonIndecies.map((pokemonIndex) {
+              return PokemonItem(
+                pokemonIndex: pokemonIndex,
+                isHero: true,
+              );
             }).toList(),
           )
         : Row(
@@ -25,10 +28,13 @@ class PokemonVarietiesSlider extends StatelessWidget {
               const SizedBox(
                 width: 50,
               ),
-              for (final entry in entries)
+              for (final pokemonIndex in pokemonIndecies)
                 Row(
                   children: [
-                    PokemonVarietyItem(entry: entry),
+                    PokemonItem(
+                      pokemonIndex: pokemonIndex,
+                      isHero: true,
+                    ),
                     const SizedBox(
                       width: 50,
                     )

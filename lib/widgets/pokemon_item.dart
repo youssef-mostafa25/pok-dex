@@ -23,20 +23,23 @@ class PokemonItem extends StatefulWidget {
 class _PokemonItemState extends State<PokemonItem> {
   Map? _pokemon;
   var _error = false;
+  var _isGettingPokemon = true;
 
   void _getPokemon() async {
     try {
-      final url = Uri.https(
-          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
+      final url =
+          Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.pokemonIndex}/');
       final response = await http.get(url);
       if (mounted) {
         setState(() {
+          _isGettingPokemon = false;
           _pokemon = jsonDecode(response.body);
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
+          _isGettingPokemon = false;
           _error = true;
         });
       }
@@ -46,14 +49,19 @@ class _PokemonItemState extends State<PokemonItem> {
   @override
   Widget build(BuildContext context) {
     _getPokemon();
-    Widget image = CachedNetworkImage(
-      imageUrl:
-          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.pokemonIndex}.png",
-      placeholder: (context, url) => Image.asset(
-        'assets/images/poke_ball_icon.png',
-      ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    );
+    Widget image = !_isGettingPokemon
+        ? _pokemon!['sprites']['front_default'] == null
+            ? Image.asset(
+                'assets/images/poke_ball_icon.png',
+              )
+            : CachedNetworkImage(
+                imageUrl: _pokemon!['sprites']['front_default'],
+                placeholder: (context, url) => Image.asset(
+                  'assets/images/poke_ball_icon.png',
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              )
+        : Image.asset('assets/images/poke_ball_icon.png');
     Widget text;
     if (_pokemon != null) {
       if (widget.isHero) {
@@ -83,10 +91,16 @@ class _PokemonItemState extends State<PokemonItem> {
 
         if (widget.isHero) {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PokemonScreen(pokemon: _pokemon!)));
+              builder: (context) => PokemonScreen(
+                    pokemon: _pokemon!,
+                    isVarient: false,
+                  )));
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => PokemonScreen(pokemon: _pokemon!)));
+              builder: (context) => PokemonScreen(
+                    pokemon: _pokemon!,
+                    isVarient: false,
+                  )));
         }
       },
       child: Container(

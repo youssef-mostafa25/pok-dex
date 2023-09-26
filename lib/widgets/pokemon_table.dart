@@ -2,43 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PokemonTable extends StatelessWidget {
-  const PokemonTable(
-      {super.key, required this.entries, required this.pokemonColor});
+  const PokemonTable({
+    super.key,
+    required this.entries,
+    required this.pokemonColor,
+    required this.tableName,
+  });
 
   final List<List<Map<String, bool>>> entries;
   final Color pokemonColor;
+  final String tableName;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Table(
-        border: TableBorder.all(),
-        columnWidths: const {
-          0: IntrinsicColumnWidth(),
-          1: FlexColumnWidth(),
-          2: FixedColumnWidth(double.minPositive),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: [
-          for (int i = 0; i < entries.length; i++)
-            TableRow(
-              children: [
-                for (final map in entries[i])
-                  for (final entry in map.keys.toList())
-                    TableCell(
-                      child: _PokemonTableCellContainer(
-                        color: i % 2 == 0
-                            ? pokemonColor.withOpacity(0.2)
-                            : pokemonColor.withOpacity(0.8),
-                        isKey: map[entry]!,
-                        entry: entry,
-                      ),
-                    ),
-              ],
-            ),
-        ],
-      ),
+    //todo fix the wide table
+    return Column(
+      children: [
+        Text(
+          tableName,
+          style: GoogleFonts.sedgwickAveDisplay(
+            color: pokemonColor,
+            fontSize: 50,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Table(
+            border: TableBorder.all(),
+            columnWidths: const {
+              0: IntrinsicColumnWidth(),
+              1: FlexColumnWidth(),
+              2: FixedColumnWidth(double.minPositive),
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              for (int i = 0; i < entries.length; i++)
+                TableRow(
+                  children: [
+                    for (final map in entries[i])
+                      for (final entry in map.keys.toList())
+                        TableCell(
+                          child: _PokemonTableCellContainer(
+                            color: i % 2 == 0
+                                ? pokemonColor.withOpacity(0.2)
+                                : pokemonColor.withOpacity(0.8),
+                            isKey: map[entry]!,
+                            entry: entry,
+                          ),
+                        ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
