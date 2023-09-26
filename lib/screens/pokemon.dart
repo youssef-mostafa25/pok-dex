@@ -13,10 +13,14 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonScreen extends StatefulWidget {
   const PokemonScreen(
-      {super.key, required this.pokemon, required this.isVarient});
+      {super.key,
+      required this.pokemon,
+      this.pokemonSpecies,
+      required this.isVariety});
 
   final Map pokemon;
-  final bool isVarient;
+  final Map? pokemonSpecies;
+  final bool isVariety;
 
   @override
   State<PokemonScreen> createState() => _PokemonScreenState();
@@ -29,34 +33,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
   Widget? randomText;
   List<int>? varieties;
 
-  Map? _pokemonSpecies;
-  var _errorPokemonSpecies = false;
-  var _isGettingPokemonSpecies = true;
-
-  void _getPokemonSpecies() async {
-    try {
-      final url = Uri.https(
-          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemon['id']}/');
-      final response = await http.get(url);
-      if (mounted) {
-        setState(() {
-          _isGettingPokemonSpecies = false;
-          _pokemonSpecies = jsonDecode(response.body);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isGettingPokemonSpecies = false;
-          _errorPokemonSpecies = true;
-        });
-      }
-    }
-  }
-
   void _getEvoloution() async {
     try {
-      final evoloutionUrl = _pokemonSpecies!['evolution_chain']['url'];
+      final evoloutionUrl = widget.pokemonSpecies!['evolution_chain']['url'];
       List<String> segments = evoloutionUrl.split("/");
       String evoloutionIndex = segments[segments.length - 2];
 
@@ -74,6 +53,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
         chain.add(PokemonItem(
           pokemonIndex: tempIndex,
           isHero: false,
+          isVariety: widget.isVariety,
         ));
         chain.add(const Icon(Icons.arrow_right_alt_rounded));
         var tempResult = result['evolves_to'];
@@ -84,6 +64,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
           chain.add(PokemonItem(
             pokemonIndex: tempIndex,
             isHero: false,
+            isVariety: widget.isVariety,
           ));
           chain.add(const Icon(Icons.arrow_right_alt_rounded));
           tempResult = tempResult[i]['evolves_to'];
@@ -138,7 +119,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   Widget get _randomFlavourText {
-    final List flavorTextEntries = _pokemonSpecies!['flavor_text_entries'];
+    final List flavorTextEntries =
+        widget.pokemonSpecies!['flavor_text_entries'];
     final int randomIndex = Random().nextInt(flavorTextEntries.length);
     Map randomMap = flavorTextEntries[randomIndex];
     String randomFlavorText = randomMap['flavor_text'].replaceAll('\n', ' ');
@@ -153,7 +135,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   List<String> get _eggGroups {
-    final List eggGroupList = _pokemonSpecies!['egg_groups'];
+    final List eggGroupList = widget.pokemonSpecies!['egg_groups'];
     List<String> result = [];
     result.add(eggGroupList.length > 1 ? 'Egg Groups' : 'Egg Group');
     if (eggGroupList.isEmpty) {
@@ -170,7 +152,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   List<int>? get _varietiesList {
-    final List varietiesList = _pokemonSpecies!['varieties'];
+    final List varietiesList = widget.pokemonSpecies!['varieties'];
     List<int> result = [];
     List segments;
     int index;
@@ -258,14 +240,30 @@ class _PokemonScreenState extends State<PokemonScreen> {
     return result;
   }
 
+  Widget get _pokemonTypes {
+    List types = widget.pokemon['types'];
+    var typesResult = '';
+    for (final type in types) {
+      typesResult += ', ${type['type']['name']}';
+    }
+    typesResult = typesResult.substring(2);
+    return Text(
+      (types.isEmpty ? '' : 'Type: ') + typesResult,
+      style: GoogleFonts.sedgwickAveDisplay(
+          fontSize: 30,
+          color: widget.isVariety
+              ? const Color.fromRGBO(97, 97, 97, 1)
+              : colorMap[widget.pokemonSpecies!['color']['name']] ??
+                  const Color.fromARGB(255, 255, 17, 0)),
+      textAlign: TextAlign.center,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    _getPokemonSpecies();
-    if (!widget.isVarient) {
+    if (!widget.isVariety) {
       _getEvoloution();
-      varieties = _varietiesList;
-      randomText = _randomFlavourText;
     }
   }
 
@@ -274,6 +272,10 @@ class _PokemonScreenState extends State<PokemonScreen> {
     final abilities = _abilities;
     final moves = _moves;
     final stats = _stats;
+    if (!widget.isVariety) {
+      varieties = _varietiesList;
+      randomText = _randomFlavourText;
+    }
     Widget evoloutionChain = GradientText(
       'No Evoloution Chain',
       textAlign: TextAlign.center,
@@ -288,7 +290,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
         Color.fromRGBO(158, 158, 158, 1), // Darker gray
       ],
     );
-    if (!widget.isVarient) {
+    if (!widget.isVariety) {
       if (_errorEvolution) {
         evoloutionChain = const Text('Something went wrong');
       } else {
@@ -311,12 +313,14 @@ class _PokemonScreenState extends State<PokemonScreen> {
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
 
+    final pokemonColor = widget.isVariety
+        ? const Color.fromRGBO(97, 97, 97, 1)
+        : colorMap[widget.pokemonSpecies!['color']['name']] ??
+            const Color.fromARGB(255, 255, 17, 0);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: _pokemonSpecies != null
-            ? colorMap[_pokemonSpecies!['color']['name']] ??
-                const Color.fromARGB(255, 255, 17, 0)
-            : Colors.grey[700],
+        backgroundColor: pokemonColor,
         foregroundColor: Colors.white,
         title: Text(
           widget.pokemon['name'],
@@ -337,15 +341,16 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 tag: widget.pokemon['id'],
                 child: image,
               ),
-              if (!_isGettingPokemonSpecies && !_errorPokemonSpecies)
-                randomText!,
+              _pokemonTypes,
               const SizedBox(height: 50),
-              if (_pokemonSpecies != null)
+              if (!widget.isVariety) randomText!,
+              const SizedBox(height: 50),
+              if (widget.pokemonSpecies != null)
                 PokemonTable(
                   entries: [
                     [
                       const {'Gen': true},
-                      {_pokemonSpecies!['generation']['name']: false}
+                      {widget.pokemonSpecies!['generation']['name']: false}
                     ],
                     [
                       {_eggGroups[0]: true},
@@ -353,40 +358,41 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     ],
                     [
                       const {'Growth Rate': true},
-                      {_pokemonSpecies!['growth_rate']['name']: false}
+                      {widget.pokemonSpecies!['growth_rate']['name']: false}
                     ],
                     [
                       const {'Habitat': true},
-                      {_pokemonSpecies!['habitat']['name']: false}
+                      {widget.pokemonSpecies!['habitat']['name']: false}
                     ],
                   ],
-                  pokemonColor: colorMap[_pokemonSpecies!['color']['name']] ??
-                      const Color.fromARGB(255, 255, 17, 0),
+                  pokemonColor:
+                      colorMap[widget.pokemonSpecies!['color']['name']] ??
+                          const Color.fromRGBO(97, 97, 97, 1),
                   tableName: 'Pokémon Info',
                 ),
-              const SizedBox(height: 70),
+              if (widget.pokemonSpecies != null) const SizedBox(height: 70),
               if (abilities != null)
                 PokemonTable(
                   entries: abilities,
-                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  pokemonColor: pokemonColor,
                   tableName: 'Abilities',
                 ),
               if (moves != null)
                 PokemonTable(
                   entries: moves,
-                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  pokemonColor: pokemonColor,
                   tableName: 'Moves',
                 ),
               if (stats != null)
                 PokemonTable(
                   entries: stats,
-                  pokemonColor: const Color.fromRGBO(97, 97, 97, 1),
+                  pokemonColor: pokemonColor,
                   tableName: 'Stats',
                 ),
               const SizedBox(height: 70),
-              evoloutionChain,
-              const SizedBox(height: 70),
-              if (!widget.isVarient)
+              if (!widget.isVariety) evoloutionChain,
+              if (!widget.isVariety) const SizedBox(height: 70),
+              if (!widget.isVariety)
                 GradientText(
                   varieties != null ? 'Varities' : 'No Varities',
                   textAlign: TextAlign.center,
@@ -399,7 +405,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     Color(0xFF0000ff), // Blue
                   ],
                 ),
-              if (!widget.isVarient && varieties != null)
+              if (!widget.isVariety && varieties != null)
                 PokemonVarietiesSliderRow(pokemonIndecies: varieties!),
               const SizedBox(height: 80)
             ],

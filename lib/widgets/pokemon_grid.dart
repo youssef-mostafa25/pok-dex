@@ -19,6 +19,7 @@ class PokemonGrid extends StatelessWidget {
             child: PokemonItem(
           pokemonIndex: index + 1,
           isHero: true,
+          isVariety: false,
         ));
       },
     );

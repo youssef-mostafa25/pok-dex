@@ -11,10 +11,12 @@ class PokemonItem extends StatefulWidget {
     super.key,
     required this.pokemonIndex,
     required this.isHero,
+    required this.isVariety,
   });
 
   final int pokemonIndex;
   final bool isHero;
+  final bool isVariety;
 
   @override
   State<PokemonItem> createState() => _PokemonItemState();
@@ -22,8 +24,11 @@ class PokemonItem extends StatefulWidget {
 
 class _PokemonItemState extends State<PokemonItem> {
   Map? _pokemon;
-  var _error = false;
+  var _errorPokemon = false;
   var _isGettingPokemon = true;
+  Map? _pokemonSpecies;
+  var _errorPokemonSpecies = false;
+  var _isGettingPokemonSpecies = true;
 
   void _getPokemon() async {
     try {
@@ -40,15 +45,42 @@ class _PokemonItemState extends State<PokemonItem> {
       if (mounted) {
         setState(() {
           _isGettingPokemon = false;
-          _error = true;
+          _errorPokemon = true;
+        });
+      }
+    }
+  }
+
+  void _getPokemonSpecies() async {
+    try {
+      final url = Uri.https(
+          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
+      final response = await http.get(url);
+      if (mounted) {
+        setState(() {
+          _isGettingPokemonSpecies = false;
+          _pokemonSpecies = jsonDecode(response.body);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isGettingPokemonSpecies = false;
+          _errorPokemonSpecies = true;
         });
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _getPokemon();
+    _getPokemonSpecies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget image = !_isGettingPokemon
         ? _pokemon!['sprites']['front_default'] == null
             ? Image.asset(
@@ -82,24 +114,32 @@ class _PokemonItemState extends State<PokemonItem> {
       text = const Text('loading...');
     }
 
-    if (_error) {
+    if (_errorPokemon) {
       text = const Text('something\nwent wrong');
     }
     return GestureDetector(
       onTap: () {
-        if (_error || _pokemon == null) return;
+        if (_errorPokemon || _pokemon == null) return;
 
         if (widget.isHero) {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => PokemonScreen(
                     pokemon: _pokemon!,
-                    isVarient: false,
+                    isVariety: widget.isVariety,
+                    pokemonSpecies:
+                        !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                            ? _pokemonSpecies
+                            : null,
                   )));
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => PokemonScreen(
                     pokemon: _pokemon!,
-                    isVarient: false,
+                    isVariety: widget.isVariety,
+                    pokemonSpecies:
+                        !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                            ? _pokemonSpecies
+                            : null,
                   )));
         }
       },
