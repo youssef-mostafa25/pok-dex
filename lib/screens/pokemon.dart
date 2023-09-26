@@ -96,7 +96,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
           ),
           for (final chain in chains)
             Row(
-              // todo placeholder causes A RenderFlex overflowed by 1840 pixels on the right.
+              // todo pichu placeholder causes A RenderFlex overflowed by 1840 pixels on the right.
               mainAxisAlignment: MainAxisAlignment.center,
               children: chain,
             )
@@ -192,27 +192,25 @@ class _PokemonScreenState extends State<PokemonScreen> {
     if (moves.isEmpty) return null;
     List<List<Map<String, bool>>> result = [];
     result.add([
-      {'Ability Name': true},
+      {'Move Name': true},
       {'Move Learn Method': true},
-      {'Version Group': true},
-      {'Level Learned At': true}
+      // {'Version Group': true},
+      // {'Level Learned At': true}
     ]);
     List<Map<String, bool>> list;
 
     for (final move in moves) {
-      for (int i = 0; i < move['version_group_details'].length; i++) {
-        list = [];
-        list.add({move['move']['name']: false});
-        list.add({
-          move['version_group_details'][i]['move_learn_method']['name']: false
-        });
-        list.add(
-            {move['version_group_details'][i]['version_group']['name']: false});
-        list.add({
-          move['version_group_details'][i]['level_learned_at'].toString(): false
-        });
-        result.add(list);
-      }
+      list = [];
+      list.add({move['move']['name']: false});
+      list.add({
+        move['version_group_details'][0]['move_learn_method']['name']: false
+      });
+      // list.add(
+      //     {move['version_group_details'][i]['version_group']['name']: false});
+      // list.add({
+      //   move['version_group_details'][i]['level_learned_at'].toString(): false
+      // });
+      result.add(list);
     }
 
     return result;
@@ -225,7 +223,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
     result.add([
       {'Stat Name': true},
       {'Base Stat': true},
-      {'Effort': true}
+      // {'Effort': true}
     ]);
     List<Map<String, bool>> list;
 
@@ -233,7 +231,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
       list = [];
       list.add({stat['stat']['name']: false});
       list.add({stat['base_stat'].toString(): false});
-      list.add({stat['effort'].toString(): false});
+      // list.add({stat['effort'].toString(): false});
       result.add(list);
     }
 
@@ -247,16 +245,32 @@ class _PokemonScreenState extends State<PokemonScreen> {
       typesResult += ', ${type['type']['name']}';
     }
     typesResult = typesResult.substring(2);
-    return Text(
-      (types.isEmpty ? '' : 'Type: ') + typesResult,
-      style: GoogleFonts.sedgwickAveDisplay(
-          fontSize: 30,
-          color: widget.isVariety
-              ? const Color.fromRGBO(97, 97, 97, 1)
-              : colorMap[widget.pokemonSpecies!['color']['name']] ??
-                  const Color.fromARGB(255, 255, 17, 0)),
-      textAlign: TextAlign.center,
-    );
+    return !widget.isVariety
+        ? Text(
+            (types.isEmpty ? '' : 'Type: ') + typesResult,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.sedgwickAveDisplay(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: colorMap[widget.pokemonSpecies!['color']['name']] ??
+                    Colors.red),
+          )
+        : SizedBox(
+            height: 45,
+            child: GradientText(
+              (types.isEmpty ? '' : 'Type: ') + typesResult,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.sedgwickAveDisplay(
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold,
+              ),
+              colors: const [
+                Color(0xFFff00ff), // Pink
+                Color(0xFF00ff00), // Green
+                Color(0xFF0000ff), // Blue
+              ],
+            ),
+          );
   }
 
   @override
@@ -276,6 +290,11 @@ class _PokemonScreenState extends State<PokemonScreen> {
       varieties = _varietiesList;
       randomText = _randomFlavourText;
     }
+    const varietyColors = [
+      Color(0xFFff00ff), // Pink
+      Color(0xFF00ff00), // Green
+      Color(0xFF0000ff), // Blue
+    ];
     Widget evoloutionChain = GradientText(
       'No Evoloution Chain',
       textAlign: TextAlign.center,
@@ -314,20 +333,31 @@ class _PokemonScreenState extends State<PokemonScreen> {
     );
 
     final pokemonColor = widget.isVariety
-        ? const Color.fromRGBO(97, 97, 97, 1)
-        : colorMap[widget.pokemonSpecies!['color']['name']] ??
-            const Color.fromARGB(255, 255, 17, 0);
+        ? null
+        : colorMap[widget.pokemonSpecies!['color']['name']] ?? Colors.red;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: pokemonColor,
-        foregroundColor: Colors.white,
-        title: Text(
-          widget.pokemon['name'],
-          style: GoogleFonts.sedgwickAveDisplay(
-              color: const Color.fromRGBO(255, 255, 255, 1),
-              fontSize: 50,
-              fontWeight: FontWeight.bold),
+        backgroundColor: pokemonColor ?? varietyColors[2],
+        foregroundColor: !widget.isVariety ? Colors.white : varietyColors.first,
+        title: Center(
+          child: !widget.isVariety
+              ? Text(
+                  widget.pokemon['name'],
+                  style: GoogleFonts.sedgwickAveDisplay(
+                      color: const Color.fromRGBO(255, 255, 255, 1),
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold),
+                )
+              : GradientText(
+                  widget.pokemon['name'],
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.sedgwickAveDisplay(
+                    fontSize: 42.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  colors: [varietyColors[0], varietyColors[1]],
+                ),
         ),
         centerTitle: true,
       ),
@@ -365,9 +395,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       {widget.pokemonSpecies!['habitat']['name']: false}
                     ],
                   ],
-                  pokemonColor:
-                      colorMap[widget.pokemonSpecies!['color']['name']] ??
-                          const Color.fromRGBO(97, 97, 97, 1),
+                  pokemonColor: pokemonColor,
+                  varietyColors: varietyColors,
                   tableName: 'Pokémon Info',
                 ),
               if (widget.pokemonSpecies != null) const SizedBox(height: 70),
@@ -376,18 +405,21 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   entries: abilities,
                   pokemonColor: pokemonColor,
                   tableName: 'Abilities',
+                  varietyColors: varietyColors,
                 ),
               if (moves != null)
                 PokemonTable(
                   entries: moves,
                   pokemonColor: pokemonColor,
                   tableName: 'Moves',
+                  varietyColors: varietyColors,
                 ),
               if (stats != null)
                 PokemonTable(
                   entries: stats,
                   pokemonColor: pokemonColor,
                   tableName: 'Stats',
+                  varietyColors: varietyColors,
                 ),
               const SizedBox(height: 70),
               if (!widget.isVariety) evoloutionChain,
@@ -399,11 +431,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   style: GoogleFonts.sedgwickAveDisplay(
                     fontSize: 30.0,
                   ),
-                  colors: const [
-                    Color(0xFFff00ff), // Pink
-                    Color(0xFF00ff00), // Green
-                    Color(0xFF0000ff), // Blue
-                  ],
+                  colors: varietyColors,
                 ),
               if (!widget.isVariety && varieties != null)
                 PokemonVarietiesSliderRow(pokemonIndecies: varieties!),

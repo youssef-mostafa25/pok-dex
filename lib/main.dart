@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/screens/pokemon_home.dart';
 
 void main() {
@@ -13,12 +14,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Great Places',
+      title: 'Pokédex',
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 255, 17, 0),
+          backgroundColor: Colors.red,
           foregroundColor: Colors.white,
-          title: const Text('Pokedéx'),
+          title: Text(
+            'Pokédex',
+            style: GoogleFonts.sedgwickAveDisplay(
+                fontSize: 50, fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
         ),
         body: const PokemonHomeScreen(),

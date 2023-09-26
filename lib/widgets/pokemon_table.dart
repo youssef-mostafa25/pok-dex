@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonTable extends StatelessWidget {
   const PokemonTable({
     super.key,
     required this.entries,
     required this.pokemonColor,
+    required this.varietyColors,
     required this.tableName,
   });
 
   final List<List<Map<String, bool>>> entries;
-  final Color pokemonColor;
+  final Color? pokemonColor;
+  final List<Color>? varietyColors;
   final String tableName;
 
   @override
@@ -18,14 +21,24 @@ class PokemonTable extends StatelessWidget {
     //todo fix the wide table
     return Column(
       children: [
-        Text(
-          tableName,
-          style: GoogleFonts.sedgwickAveDisplay(
-            color: pokemonColor,
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        pokemonColor != null
+            ? Text(
+                tableName,
+                style: GoogleFonts.sedgwickAveDisplay(
+                  color: pokemonColor,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : GradientText(
+                tableName,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sedgwickAveDisplay(
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                colors: varietyColors!,
+              ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Table(
@@ -44,9 +57,11 @@ class PokemonTable extends StatelessWidget {
                       for (final entry in map.keys.toList())
                         TableCell(
                           child: _PokemonTableCellContainer(
-                            color: i % 2 == 0
-                                ? pokemonColor.withOpacity(0.2)
-                                : pokemonColor.withOpacity(0.8),
+                            color: pokemonColor != null
+                                ? i % 2 == 0
+                                    ? pokemonColor!.withOpacity(0.2)
+                                    : pokemonColor!.withOpacity(0.8)
+                                : varietyColors![i % 3].withOpacity(0.5),
                             isKey: map[entry]!,
                             entry: entry,
                           ),

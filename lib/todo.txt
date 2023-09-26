@@ -1,2 +1,2 @@
-pokemon.dart
-pokemon_table.dart
+pokemon.dart: fix pixel overflow
+pokemon_table.dart: fix table with large width
