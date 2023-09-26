@@ -75,7 +75,6 @@ class _PokemonItemState extends State<PokemonItem> {
     }
 
     if (_error) {
-      image = const Icon(Icons.question_mark);
       text = const Text('something\nwent wrong');
     }
     return GestureDetector(
