@@ -54,6 +54,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
           pokemonIndex: tempIndex,
           isHero: false,
           isVariety: widget.isVariety,
+          isSamePokemon: widget.pokemon['id'] == tempIndex,
         ));
         chain.add(const Icon(Icons.arrow_right_alt_rounded));
         var tempResult = result['evolves_to'];
@@ -65,6 +66,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
             pokemonIndex: tempIndex,
             isHero: false,
             isVariety: widget.isVariety,
+            isSamePokemon: widget.pokemon['id'] == tempIndex,
           ));
           chain.add(const Icon(Icons.arrow_right_alt_rounded));
           tempResult = tempResult[i]['evolves_to'];

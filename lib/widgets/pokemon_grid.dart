@@ -20,6 +20,7 @@ class PokemonGrid extends StatelessWidget {
           pokemonIndex: index + 1,
           isHero: true,
           isVariety: false,
+          isSamePokemon: false,
         ));
       },
     );

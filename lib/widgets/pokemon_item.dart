@@ -12,11 +12,13 @@ class PokemonItem extends StatefulWidget {
     required this.pokemonIndex,
     required this.isHero,
     required this.isVariety,
+    required this.isSamePokemon,
   });
 
   final int pokemonIndex;
   final bool isHero;
   final bool isVariety;
+  final bool isSamePokemon;
 
   @override
   State<PokemonItem> createState() => _PokemonItemState();
@@ -118,31 +120,33 @@ class _PokemonItemState extends State<PokemonItem> {
       text = const Text('something\nwent wrong');
     }
     return GestureDetector(
-      onTap: () {
-        if (_errorPokemon || _pokemon == null) return;
+      onTap: !widget.isSamePokemon
+          ? () {
+              if (_errorPokemon || _pokemon == null) return;
 
-        if (widget.isHero) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PokemonScreen(
-                    pokemon: _pokemon!,
-                    isVariety: widget.isVariety,
-                    pokemonSpecies:
-                        !_isGettingPokemonSpecies && !_errorPokemonSpecies
-                            ? _pokemonSpecies
-                            : null,
-                  )));
-        } else {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => PokemonScreen(
-                    pokemon: _pokemon!,
-                    isVariety: widget.isVariety,
-                    pokemonSpecies:
-                        !_isGettingPokemonSpecies && !_errorPokemonSpecies
-                            ? _pokemonSpecies
-                            : null,
-                  )));
-        }
-      },
+              if (widget.isHero) {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PokemonScreen(
+                          pokemon: _pokemon!,
+                          isVariety: widget.isVariety,
+                          pokemonSpecies:
+                              !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                                  ? _pokemonSpecies
+                                  : null,
+                        )));
+              } else {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => PokemonScreen(
+                          pokemon: _pokemon!,
+                          isVariety: widget.isVariety,
+                          pokemonSpecies:
+                              !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                                  ? _pokemonSpecies
+                                  : null,
+                        )));
+              }
+            }
+          : null,
       child: Container(
         decoration: const BoxDecoration(
           shape: BoxShape.circle, // Make it circular
