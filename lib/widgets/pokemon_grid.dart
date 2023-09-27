@@ -4,10 +4,10 @@ import 'package:pokedex/widgets/pokemon_item.dart';
 class PokemonGrid extends StatelessWidget {
   const PokemonGrid({
     super.key,
-    required this.pokemonCount,
+    required this.pokemonNamesOrIds,
   });
 
-  final int pokemonCount;
+  final List<String> pokemonNamesOrIds;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class PokemonGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         return GridTile(
             child: PokemonItem(
-          pokemonIndex: index + 1,
+          pokemonNameOrId: pokemonNamesOrIds[index],
           isHero: true,
           isVariety: false,
           isSamePokemon: false,

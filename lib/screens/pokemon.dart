@@ -53,7 +53,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
         chain.add(SizedBox(
           width: 100,
           child: PokemonItem(
-            pokemonIndex: tempIndex,
+            pokemonNameOrId: tempIndex.toString(),
             isHero: false,
             isVariety: widget.isVariety,
             isSamePokemon: widget.pokemon['id'] == tempIndex,
@@ -69,7 +69,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
             SizedBox(
               width: 100,
               child: PokemonItem(
-                pokemonIndex: tempIndex,
+                pokemonNameOrId: tempIndex.toString(),
                 isHero: false,
                 isVariety: widget.isVariety,
                 isSamePokemon: widget.pokemon['id'] == tempIndex,

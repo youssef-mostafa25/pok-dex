@@ -17,7 +17,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
             ),
             items: pokemonIndecies.map((pokemonIndex) {
               return PokemonItem(
-                pokemonIndex: pokemonIndex,
+                pokemonNameOrId: pokemonIndex.toString(),
                 isHero: true,
                 isVariety: true,
                 isSamePokemon: false,
@@ -34,7 +34,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
                 Row(
                   children: [
                     PokemonItem(
-                      pokemonIndex: pokemonIndex,
+                      pokemonNameOrId: pokemonIndex.toString(),
                       isHero: true,
                       isVariety: true,
                       isSamePokemon: false,

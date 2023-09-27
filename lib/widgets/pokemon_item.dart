@@ -9,13 +9,13 @@ import 'package:pokedex/screens/pokemon.dart';
 class PokemonItem extends StatefulWidget {
   const PokemonItem({
     super.key,
-    required this.pokemonIndex,
+    required this.pokemonNameOrId,
     required this.isHero,
     required this.isVariety,
     required this.isSamePokemon,
   });
 
-  final int pokemonIndex;
+  final String pokemonNameOrId;
   final bool isHero;
   final bool isVariety;
   final bool isSamePokemon;
@@ -35,7 +35,7 @@ class _PokemonItemState extends State<PokemonItem> {
   void _getPokemon() async {
     try {
       final url =
-          Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.pokemonIndex}/');
+          Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.pokemonNameOrId}/');
       final response = await http.get(url);
       if (mounted) {
         setState(() {
@@ -56,7 +56,7 @@ class _PokemonItemState extends State<PokemonItem> {
   void _getPokemonSpecies() async {
     try {
       final url = Uri.https(
-          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonIndex}/');
+          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonNameOrId}/');
       final response = await http.get(url);
       if (mounted) {
         setState(() {

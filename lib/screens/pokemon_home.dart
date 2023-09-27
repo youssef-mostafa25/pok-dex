@@ -14,14 +14,30 @@ class PokemonHomeScreen extends StatefulWidget {
 
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _isGettingPokemonCount = true;
-  int? pokemonNumber;
+  List<String> pokemonNames = [];
+  List<int> pokemonIds = [];
   var _error = false;
+
+  void fillPokemonNamesAndIds(List entries) {
+    for (final entry in entries) {
+      pokemonNames.add(entry['name']);
+      String url = entry['url'];
+      List<String> segments = url.split("/");
+      pokemonIds.add(int.parse(segments[segments.length - 2]));
+    }
+  }
 
   void _getPokemonNumber() async {
     try {
-      final url = Uri.https('pokeapi.co', 'api/v2/pokemon-species/');
+      final url = Uri.https('pokeapi.co', 'api/v2/pokemon-species', {
+        'limit': '100000',
+        'offset': '0',
+        'queryParamWithQuestionMark': '?'
+      });
+
       final response = await http.get(url);
-      pokemonNumber = json.decode(response.body)['count'];
+      final decodedResponse = json.decode(response.body);
+      fillPokemonNamesAndIds(decodedResponse['results']);
       if (mounted) {
         setState(() {
           _isGettingPokemonCount = false;
@@ -52,7 +68,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     } else if (_isGettingPokemonCount) {
       content = const CircularProgressIndicator();
     } else {
-      content = PokemonGrid(pokemonCount: pokemonNumber!);
+      content = PokemonGrid(pokemonNamesOrIds: pokemonNames);
     }
 
     return Scaffold(
@@ -85,7 +101,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   hintStyle: GoogleFonts.handlee(),
                                 ),
                               ),
-                              
                             ],
                           ),
                         ),
