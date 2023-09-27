@@ -50,11 +50,14 @@ class _PokemonScreenState extends State<PokemonScreen> {
         var tempUrl = result['species']['url'];
         List<String> segments = tempUrl.split("/");
         int tempIndex = int.parse(segments[segments.length - 2]);
-        chain.add(PokemonItem(
-          pokemonIndex: tempIndex,
-          isHero: false,
-          isVariety: widget.isVariety,
-          isSamePokemon: widget.pokemon['id'] == tempIndex,
+        chain.add(SizedBox(
+          width: 100,
+          child: PokemonItem(
+            pokemonIndex: tempIndex,
+            isHero: false,
+            isVariety: widget.isVariety,
+            isSamePokemon: widget.pokemon['id'] == tempIndex,
+          ),
         ));
         chain.add(const Icon(Icons.arrow_right_alt_rounded));
         var tempResult = result['evolves_to'];
@@ -62,12 +65,17 @@ class _PokemonScreenState extends State<PokemonScreen> {
           tempUrl = tempResult[i]['species']['url'];
           segments = tempUrl.split("/");
           tempIndex = int.parse(segments[segments.length - 2]);
-          chain.add(PokemonItem(
-            pokemonIndex: tempIndex,
-            isHero: false,
-            isVariety: widget.isVariety,
-            isSamePokemon: widget.pokemon['id'] == tempIndex,
-          ));
+          chain.add(
+            SizedBox(
+              width: 100,
+              child: PokemonItem(
+                pokemonIndex: tempIndex,
+                isHero: false,
+                isVariety: widget.isVariety,
+                isSamePokemon: widget.pokemon['id'] == tempIndex,
+              ),
+            ),
+          );
           chain.add(const Icon(Icons.arrow_right_alt_rounded));
           tempResult = tempResult[i]['evolves_to'];
         }
@@ -97,10 +105,11 @@ class _PokemonScreenState extends State<PokemonScreen> {
             ],
           ),
           for (final chain in chains)
-            Row(
-              // todo pichu placeholder causes A RenderFlex overflowed by 1840 pixels on the right.
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: chain,
+            SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: chain,
+              ),
             )
         ],
       );
@@ -323,7 +332,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
       }
     }
     Widget image = CachedNetworkImage(
-      imageUrl: widget.pokemon['sprites']['front_default'],
+      imageUrl: widget.pokemon['sprites']['other']['official-artwork']
+          ['front_default'],
       placeholder: (context, url) => Image.asset(
         'assets/images/poke_ball_icon.png',
       ),

@@ -84,12 +84,14 @@ class _PokemonItemState extends State<PokemonItem> {
   @override
   Widget build(BuildContext context) {
     Widget image = !_isGettingPokemon
-        ? _pokemon!['sprites']['front_default'] == null
+        ? _pokemon!['sprites']['other']['official-artwork']['front_default'] ==
+                null
             ? Image.asset(
                 'assets/images/poke_ball_icon.png',
               )
             : CachedNetworkImage(
-                imageUrl: _pokemon!['sprites']['front_default'],
+                imageUrl: _pokemon!['sprites']['other']['official-artwork']
+                    ['front_default'],
                 placeholder: (context, url) => Image.asset(
                   'assets/images/poke_ball_icon.png',
                 ),
@@ -102,7 +104,7 @@ class _PokemonItemState extends State<PokemonItem> {
         image = Hero(
           tag: _pokemon!['id'],
           child: SizedBox(
-            width: 80,
+            width: 100,
             child: image,
           ),
         );

@@ -2,14 +2,14 @@ the user should be able to view all pokemon ✅
 the user should be able to view pokemon/variety info ✅
 the user should be able to view all evolutions of a pokemon when on the pokemon's screen ✅
 the user should be able to view all varieties of a pokemon when on the pokemon's screen ✅
-the user should be able to sort pokemon by name, id 
-the user should be able to filter pokemon by pokedex, region, type(s), color
-the user should be able to search for pokemon full name, part of the name
+the user should be able to sort pokemon by id#, name
+the user should be able to filter pokemon by pokedex, region, type(s), color, habitat, 
+the user should be able to search for pokemon full name#, part of the name
 
 # later
 # the user should be able to switch bettween pokemon and berries tab
 # the user should be able to view all berries
 # the user should be able to view each berry's info
 
-extra: better search query using || and && and adding the ability to search by other pokemon info (TBD)
-    eg: attack = 'thunder shock' && name != pikatchu
+# extra: better search query using || and && and adding the ability to search by other pokemon info (TBD)
+#     eg: attack = 'thunder shock' && name != pikatchu

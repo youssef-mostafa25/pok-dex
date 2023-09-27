@@ -70,8 +70,25 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {
-                      return Container(
-                        child: Text('data'),
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                style: GoogleFonts.handlee(),
+                                /*controller: ,*/
+                                decoration: InputDecoration(
+                                  labelText: 'Search',
+                                  hintText: 'hint',
+                                  labelStyle: GoogleFonts.handlee(),
+                                  hintStyle: GoogleFonts.handlee(),
+                                ),
+                              ),
+                              
+                            ],
+                          ),
+                        ),
                       );
                     },
                   );
