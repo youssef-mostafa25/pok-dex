@@ -83,21 +83,40 @@ class _PokemonItemState extends State<PokemonItem> {
 
   @override
   Widget build(BuildContext context) {
+    String imageUrl = '';
+
+    if (!_isGettingPokemon) {
+      if (_pokemon!['sprites']['other']['official-artwork']['front_default'] !=
+          null) {
+        imageUrl =
+            _pokemon!['sprites']['other']['official-artwork']['front_default'];
+      } else if (_pokemon!['sprites']['other']['dream_world']
+              ['front_default'] !=
+          null) {
+        imageUrl =
+            _pokemon!['sprites']['other']['dream_world']['front_default'];
+      } else if (_pokemon!['sprites']['other']['home']['front_default'] !=
+          null) {
+        imageUrl = _pokemon!['sprites']['other']['home']['front_default'];
+      } else if (_pokemon!['sprites']['front_default'] != null) {
+        imageUrl = _pokemon!['sprites']['front_default'];
+      }
+    }
+
     Widget image = !_isGettingPokemon
-        ? _pokemon!['sprites']['other']['official-artwork']['front_default'] ==
-                null
+        ? imageUrl.isEmpty
             ? Image.asset(
                 'assets/images/poke_ball_icon.png',
               )
             : CachedNetworkImage(
-                imageUrl: _pokemon!['sprites']['other']['official-artwork']
-                    ['front_default'],
+                imageUrl: imageUrl,
                 placeholder: (context, url) => Image.asset(
                   'assets/images/poke_ball_icon.png',
                 ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               )
         : Image.asset('assets/images/poke_ball_icon.png');
+
     Widget text;
     if (_pokemon != null) {
       if (widget.isHero) {

@@ -331,16 +331,36 @@ class _PokemonScreenState extends State<PokemonScreen> {
         }
       }
     }
-    Widget image = CachedNetworkImage(
-      imageUrl: widget.pokemon['sprites']['other']['official-artwork']
-          ['front_default'],
-      placeholder: (context, url) => Image.asset(
-        'assets/images/poke_ball_icon.png',
-      ),
-      height: 300,
-      fit: BoxFit.cover,
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    );
+    String imageUrl = '';
+
+    if (widget.pokemon['sprites']['other']['official-artwork']
+            ['front_default'] !=
+        null) {
+      imageUrl = widget.pokemon['sprites']['other']['official-artwork']
+          ['front_default'];
+    } else if (widget.pokemon['sprites']['other']['dream_world']
+            ['front_default'] !=
+        null) {
+      imageUrl =
+          widget.pokemon['sprites']['other']['dream_world']['front_default'];
+    } else if (widget.pokemon['sprites']['other']['home']['front_default'] !=
+        null) {
+      imageUrl = widget.pokemon['sprites']['other']['home']['front_default'];
+    } else if (widget.pokemon['sprites']['front_default'] != null) {
+      imageUrl = widget.pokemon['sprites']['front_default'];
+    }
+
+    Widget image = imageUrl.isEmpty
+        ? Image.asset(
+            'assets/images/poke_ball_icon.png',
+          )
+        : CachedNetworkImage(
+            imageUrl: imageUrl,
+            placeholder: (context, url) => Image.asset(
+              'assets/images/poke_ball_icon.png',
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          );
 
     final pokemonColor = widget.isVariety
         ? null

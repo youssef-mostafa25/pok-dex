@@ -20,7 +20,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
                 pokemonIndex: pokemonIndex,
                 isHero: true,
                 isVariety: true,
-                isSamePokemon: true,
+                isSamePokemon: false,
               );
             }).toList(),
           )
