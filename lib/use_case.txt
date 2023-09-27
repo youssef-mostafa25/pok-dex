@@ -1,8 +1,10 @@
-the user should be able to view all pokemon
+the user should be able to view all pokemon ✅
+the user should be able to view pokemon/variety info ✅
+the user should be able to view all evolutions of a pokemon when on the pokemon's screen ✅
+the user should be able to view all varieties of a pokemon when on the pokemon's screen ✅
 the user should be able to sort pokemon by name, id 
 the user should be able to filter pokemon by pokedex, region, type(s), color
 the user should be able to search for pokemon full name, part of the name
-the user should be able to view all evolutions of a pokemon when on the pokemon's info page
 
 # later
 # the user should be able to switch bettween pokemon and berries tab
