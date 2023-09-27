@@ -27,7 +27,6 @@ class PokemonTable extends StatelessWidget {
                 style: GoogleFonts.sedgwickAveDisplay(
                   color: pokemonColor,
                   fontSize: 30,
-                  fontWeight: FontWeight.bold,
                 ),
               )
             : GradientText(
@@ -35,7 +34,6 @@ class PokemonTable extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sedgwickAveDisplay(
                   fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
                 ),
                 colors: varietyColors!,
               ),

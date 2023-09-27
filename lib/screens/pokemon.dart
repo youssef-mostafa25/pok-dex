@@ -253,7 +253,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
             textAlign: TextAlign.center,
             style: GoogleFonts.sedgwickAveDisplay(
                 fontSize: 30,
-                fontWeight: FontWeight.bold,
                 color: colorMap[widget.pokemonSpecies!['color']['name']] ??
                     Colors.red),
           )
@@ -264,7 +263,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.sedgwickAveDisplay(
                 fontSize: 30.0,
-                fontWeight: FontWeight.bold,
               ),
               colors: const [
                 Color(0xFFff00ff), // Pink
@@ -348,15 +346,13 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   widget.pokemon['name'],
                   style: GoogleFonts.sedgwickAveDisplay(
                       color: const Color.fromRGBO(255, 255, 255, 1),
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold),
+                      fontSize: 40),
                 )
               : GradientText(
                   widget.pokemon['name'],
                   textAlign: TextAlign.center,
                   style: GoogleFonts.sedgwickAveDisplay(
-                    fontSize: 42.0,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 40,
                   ),
                   colors: [varietyColors[0], varietyColors[1]],
                 ),
@@ -409,13 +405,15 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   tableName: 'Abilities',
                   varietyColors: varietyColors,
                 ),
-              if (moves != null)
-                PokemonTable(
-                  entries: moves,
-                  pokemonColor: pokemonColor,
-                  tableName: 'Moves',
-                  varietyColors: varietyColors,
-                ),
+              if (abilities != null) const SizedBox(height: 70),
+              // if (moves != null)
+              //   PokemonTable(
+              //     entries: moves,
+              //     pokemonColor: pokemonColor,
+              //     tableName: 'Moves',
+              //     varietyColors: varietyColors,
+              //   ),
+              // if (moves != null) const SizedBox(height: 70),
               if (stats != null)
                 PokemonTable(
                   entries: stats,
@@ -423,7 +421,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   tableName: 'Stats',
                   varietyColors: varietyColors,
                 ),
-              const SizedBox(height: 70),
+              if (stats != null) const SizedBox(height: 70),
               if (!widget.isVariety) evoloutionChain,
               if (!widget.isVariety) const SizedBox(height: 70),
               if (!widget.isVariety)

@@ -109,7 +109,7 @@ class _PokemonItemState extends State<PokemonItem> {
       }
       text = Text(
         _pokemon!['name'],
-        style: GoogleFonts.handlee(),
+        style: GoogleFonts.handlee(fontSize: 15),
       );
     } else {
       image = const CircularProgressIndicator();

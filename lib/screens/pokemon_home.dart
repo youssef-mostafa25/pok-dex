@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/widgets/pokemon_grid.dart';
 
@@ -54,6 +55,32 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       content = PokemonGrid(pokemonCount: pokemonNumber!);
     }
 
-    return Center(child: content);
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          title: Text(
+            'Pokédex',
+            style: GoogleFonts.sedgwickAveDisplay(fontSize: 40),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        child: Text('data'),
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(
+                  Icons.menu,
+                )),
+          ],
+        ),
+        body: Center(child: content));
   }
 }
