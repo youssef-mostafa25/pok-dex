@@ -1,92 +1,70 @@
-# pokedex
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/flutter_dev12/pokedex.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/flutter_dev12/pokedex/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+# Pokédex
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### 1. Project summary:
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The Pokédex is a comprehensive mobile application designed for Pokémon enthusiasts and trainers. This app provides a user-friendly interface for users to explore, filter, sort, and search for detailed information about all known Pokémon species. Whether you're a veteran trainer or just starting your journey, this app is your ultimate companion for mastering the world of Pokémon.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### 2. Technologies used:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+- PokéAPI: I chose to utilize the PokéAPI for this project due to its comprehensive and well-structured database of Pokémon information. The PokéAPI offers a wealth of data, including detailed profiles, abilities, types, and evolutions for every Pokémon in the series. Its developer-friendly design, regular updates, and open accessibility make it an ideal resource for creating a robust and up-to-date Pokédex application. By leveraging the PokéAPI, we ensure that our users have access to the most accurate and comprehensive Pokémon information available, enhancing their overall experience and knowledge of the Pokémon world.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- Flutter: Flutter was chosen for this project for several compelling reasons. Firstly, its cross-platform nature allows us to develop a single codebase that runs seamlessly on both Android and iOS devices, reducing development time and effort. Secondly, Flutter offers a rich set of pre-designed widgets and a highly customizable UI, enabling us to create a visually appealing and consistent user experience. In summary, Flutter empowers us to create feature-rich, polished apps efficiently, making it the ideal framework for this project.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Features
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### 1. Pokédex Browser:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- Browse through a complete list of Pokémon species.
+- View detailed information for each Pokémon, including its name, number, type, abilities, and more.
+- Marvel at high-quality images and sprites for every Pokémon.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### 2. Search and Filter:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- Quickly find Pokémon by part of their name using the powerful search functionality.
+- Apply filters to narrow down your search based on various criteria, such as pokédex, region, type, color, habitat.
+- Sort Pokémon by name or number for easy reference.
 
-## License
-For open source projects, say how it is licensed.
+### 3. Detailed Pokémon Profiles:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Access comprehensive profiles for each Pokémon, including base stats, moves, pokémon varieties, evolutions, abilities, and other pokémon details.
+
+### 4. Interactive Interface:
+
+- Enjoy an intuitive and visually appealing user interface designed with Pokémon fans in mind.
+- Swipe through Pokémon entries with ease and access information effortlessly.
+
+### 5. Real-time Updates:
+
+- Stay up-to-date with the latest Pokémon releases and updates.
+
+## How to Install and Run the Project
+
+### 1. Project installation:
+
+Execute the following command in your desired directory within the terminal to install the project:
+
+```
+git clone https://github.com/youssef-mostafa25/pokedex.git
+```
+
+### 2. Running the project:
+
+- Make sure you have Flutter installed on your system.
+- Execute the following command while in the cloned project directiory
+
+```
+flutter run
+```
+
+## Compatibility:
+
+Available on both Android and iOS devices.
+
+## Credits
+
+<div>
+<a href="https://github.com/youssef-mostafa25">
+  <img src="https://github.com/youssef-mostafa25.png" width="100" height="100" alt="Your Name" style="border-radius: 50%;">
+</div>
