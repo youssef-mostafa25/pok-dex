@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 enum Sort {
   idAscending('id ascending'),
-  idDescending('id dscending'),
+  idDescending('id descending'),
   nameAscending('name ascending'),
-  nameDescending('name dscending');
+  nameDescending('name descending');
 
   final String value;
 
