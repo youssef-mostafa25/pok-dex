@@ -252,22 +252,14 @@ class _PokemonScreenState extends State<PokemonScreen> {
     return result;
   }
 
-  Widget get _pokemonTypes {
+  String get _pokemonTypes {
     List types = widget.pokemon['types'];
     var typesResult = '';
     for (final type in types) {
       typesResult += ', ${type['type']['name']}';
     }
     typesResult = typesResult.substring(2);
-    return Text(
-      (types.isEmpty ? '' : 'Type: ') + typesResult,
-      textAlign: TextAlign.center,
-      style: GoogleFonts.sedgwickAveDisplay(
-          fontSize: 30,
-          color: !widget.isVariety
-              ? colorMap[widget.pokemonSpecies!['color']['name']] ?? Colors.red
-              : widget.originalColor),
-    );
+    return typesResult;
   }
 
   @override
@@ -383,7 +375,17 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   tag: widget.pokemon['id'],
                   child: image,
                 ),
-                _pokemonTypes,
+                PokemonTable(entries: [
+                  [
+                    const {'ID': true},
+                    {widget.pokemon['id'].toString(): false},
+                  ],
+                  if (_pokemonTypes.isNotEmpty)
+                    [
+                      {_pokemonTypes.length > 1 ? 'Types' : 'Type': true},
+                      {_pokemonTypes: false},
+                    ]
+                ], pokemonColor: pokemonColor, tableName: 'Pokémon Details'),
                 const SizedBox(height: 50),
                 if (!widget.isVariety) randomText!,
                 const SizedBox(height: 50),
@@ -391,7 +393,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   PokemonTable(
                     entries: [
                       [
-                        const {'Gen': true},
+                        const {'Generation': true},
                         {widget.pokemonSpecies!['generation']['name']: false}
                       ],
                       [
@@ -418,14 +420,13 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     tableName: 'Abilities',
                   ),
                 if (abilities != null) const SizedBox(height: 70),
-                // if (moves != null)
-                //   PokemonTable(
-                //     entries: moves,
-                //     pokemonColor: pokemonColor,
-                //     tableName: 'Moves',
-                //     varietyColors: varietyColors,
-                //   ),
-                // if (moves != null) const SizedBox(height: 70),
+                if (moves != null)
+                  PokemonTable(
+                    entries: moves,
+                    pokemonColor: pokemonColor,
+                    tableName: 'Moves',
+                  ),
+                if (moves != null) const SizedBox(height: 70),
                 if (stats != null)
                   PokemonTable(
                     entries: stats,

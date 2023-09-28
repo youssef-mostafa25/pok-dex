@@ -129,7 +129,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   context: context,
                   builder: (context) {
                     return Container(
-                      // color: Colors.red.withOpacity(0.09),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
