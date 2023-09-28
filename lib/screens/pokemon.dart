@@ -151,7 +151,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
     result.add(eggGroupList.length > 1 ? 'Egg Groups' : 'Egg Group');
     if (eggGroupList.isEmpty) {
       result.add('Egg Group');
-      result.add('NULL');
+      result.add('no egg group');
     }
     var groups = '';
     for (final eggGroup in eggGroupList) {

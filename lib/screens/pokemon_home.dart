@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:pokedex/static_data.dart';
 import 'package:pokedex/widgets/pokemon_grid.dart';
 
 class PokemonHomeScreen extends StatefulWidget {
@@ -15,15 +16,16 @@ class PokemonHomeScreen extends StatefulWidget {
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _isGettingPokemonCount = true;
   List<String> pokemonNames = [];
-  List<int> pokemonIds = [];
+  List<String> pokemonIds = [];
   var _error = false;
+  Sort _sortBy = Sort.idAscending;
 
   void fillPokemonNamesAndIds(List entries) {
     for (final entry in entries) {
       pokemonNames.add(entry['name']);
       String url = entry['url'];
       List<String> segments = url.split("/");
-      pokemonIds.add(int.parse(segments[segments.length - 2]));
+      pokemonIds.add(segments[segments.length - 2]);
     }
   }
 
@@ -62,13 +64,16 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   @override
   Widget build(BuildContext context) {
     Widget content;
+    final deviceWidth = MediaQuery.of(context).size.width;
+
+    final TextEditingController _searchController = TextEditingController();
 
     if (_error) {
       content = const Text('pokemon_home error');
     } else if (_isGettingPokemonCount) {
       content = const CircularProgressIndicator();
     } else {
-      content = PokemonGrid(pokemonNamesOrIds: pokemonNames);
+      content = PokemonGrid(pokemonNamesOrIds: pokemonIds);
     }
 
     return Scaffold(
@@ -86,22 +91,66 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Form(
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                style: GoogleFonts.handlee(),
-                                /*controller: ,*/
-                                decoration: InputDecoration(
-                                  labelText: 'Search',
-                                  hintText: 'hint',
-                                  labelStyle: GoogleFonts.handlee(),
-                                  hintStyle: GoogleFonts.handlee(),
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Form(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: deviceWidth / 2 - 36,
+                                      child: TextFormField(
+                                        style: GoogleFonts.handlee(),
+                                        keyboardType: TextInputType.name,
+                                        controller: _searchController,
+                                        decoration: InputDecoration(
+                                          labelText: 'Search',
+                                          hintText: 'hint',
+                                          labelStyle: GoogleFonts.handlee(),
+                                          hintStyle: GoogleFonts.handlee(),
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          // call search function
+                                        },
+                                        icon: const Icon(Icons.search)),
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 25),
+                                      width: deviceWidth / 2 - 90,
+                                      child: DropdownButtonFormField<Sort>(
+                                        value: _sortBy,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _sortBy = value!;
+                                          });
+                                        },
+                                        items: Sort.values
+                                            .map<DropdownMenuItem<Sort>>(
+                                                (sortEnum) {
+                                          return DropdownMenuItem(
+                                            value: sortEnum,
+                                            child: Text(
+                                              sortEnum.value,
+                                              style: GoogleFonts.handlee(),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Sort by',
+                                          labelStyle: GoogleFonts.handlee(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );

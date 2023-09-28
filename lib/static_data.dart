@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+enum Sort {
+  idAscending('id ascending'),
+  idDescending('id dscending'),
+  nameAscending('name ascending'),
+  nameDescending('name dscending');
+
+  final String value;
+
+  const Sort(this.value);
+}
+
 final Map<String, Color> colorMap = {
   'red': Colors.red,
   'blue': Colors.blue,
