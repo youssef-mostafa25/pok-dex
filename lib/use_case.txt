@@ -3,7 +3,7 @@ the user should be able to view pokemon/variety info ✅
 the user should be able to view all evolutions of a pokemon when on the pokemon's screen ✅
 the user should be able to view all varieties of a pokemon when on the pokemon's screen ✅
 the user should be able to sort pokemon by id, name
-the user should be able to filter pokemon by pokedex, region, type(s), color, habitat, have an evolution chain
+the user should be able to filter pokemon by pokedex, region, type(s), color, habitat
 the user should be able to search for pokemon full name, part of the name
 
 # later
@@ -14,11 +14,10 @@ the user should be able to search for pokemon full name, part of the name
 # extra: better search query using || and && and adding the ability to search by other pokemon info (TBD)
 #     eg: attack = 'thunder shock' && name != pikatchu
 
-
-habitat: https://pokeapi.co/api/v2/pokemon-habitat/{id/name}/
-pokedex: https://pokeapi.co/api/v2/pokedex/{id/name}/
-evolution chain: https://pokeapi.co/api/v2/evolution-chain/
+region: https://pokeapi.co/api/v2/region/(id/name)/
 color: https://pokeapi.co/api/v2/pokemon-color/{id/name}/
 type: https://pokeapi.co/api/v2/type/{id/name}/
+habitat: https://pokeapi.co/api/v2/pokemon-habitat/{id/name}/
+pokedex: https://pokeapi.co/api/v2/pokedex/{id/name}/
 
 sort by name: https://pokeapi.co/api/v2/pokemon-species/?limit=100000&offset=0

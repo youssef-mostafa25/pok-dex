@@ -11,18 +11,20 @@ class PokemonGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      itemBuilder: (context, index) {
-        return GridTile(
-            child: PokemonItem(
-          pokemonNameOrId: pokemonNamesOrIds[index],
-          isHero: true,
-          isVariety: false,
-          isSamePokemon: false,
-        ));
-      },
+    return Expanded(
+      child: GridView.builder(
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemBuilder: (context, index) {
+          return GridTile(
+              child: PokemonItem(
+            pokemonNameOrId: pokemonNamesOrIds[index],
+            isHero: true,
+            isVariety: false,
+            isSamePokemon: false,
+          ));
+        },
+      ),
     );
   }
 }
