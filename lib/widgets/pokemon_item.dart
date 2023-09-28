@@ -13,12 +13,14 @@ class PokemonItem extends StatefulWidget {
     required this.isHero,
     required this.isVariety,
     required this.isSamePokemon,
+    this.originalColor,
   });
 
   final String pokemonNameOrId;
   final bool isHero;
   final bool isVariety;
   final bool isSamePokemon;
+  final Color? originalColor;
 
   @override
   State<PokemonItem> createState() => _PokemonItemState();
@@ -146,25 +148,33 @@ class _PokemonItemState extends State<PokemonItem> {
               if (_errorPokemon || _pokemon == null) return;
 
               if (widget.isHero) {
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).push(
+                  MaterialPageRoute(
                     builder: (context) => PokemonScreen(
-                          pokemon: _pokemon!,
-                          isVariety: widget.isVariety,
-                          pokemonSpecies:
-                              !_isGettingPokemonSpecies && !_errorPokemonSpecies
-                                  ? _pokemonSpecies
-                                  : null,
-                        )));
+                      pokemon: _pokemon!,
+                      originalColor: widget.originalColor,
+                      isVariety: widget.isVariety,
+                      pokemonSpecies:
+                          !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                              ? _pokemonSpecies
+                              : null,
+                    ),
+                  ),
+                );
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
                     builder: (context) => PokemonScreen(
-                          pokemon: _pokemon!,
-                          isVariety: widget.isVariety,
-                          pokemonSpecies:
-                              !_isGettingPokemonSpecies && !_errorPokemonSpecies
-                                  ? _pokemonSpecies
-                                  : null,
-                        )));
+                      pokemon: _pokemon!,
+                      originalColor: widget.originalColor,
+                      isVariety: widget.isVariety,
+                      pokemonSpecies:
+                          !_isGettingPokemonSpecies && !_errorPokemonSpecies
+                              ? _pokemonSpecies
+                              : null,
+                    ),
+                  ),
+                );
               }
             }
           : null,

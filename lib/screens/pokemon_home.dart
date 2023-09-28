@@ -84,6 +84,12 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   @override
   Widget build(BuildContext context) {
     Widget content;
+    var sortBy = _sortBy;
+    var region = _region;
+    var color = _color;
+    var type = _type;
+    var habitat = _habitat;
+    var pokedex = _pokedex;
     final deviceWidth = MediaQuery.of(context).size.width;
 
     if (_error) {
@@ -106,247 +112,296 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          title: Text(
-            'Pokédex',
-            style: GoogleFonts.sedgwickAveDisplay(fontSize: 40),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    useSafeArea: true,
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                        // color: Colors.red.withOpacity(0.09),
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [
-                              Colors.red.withOpacity(0.05),
-                              Colors.red.withOpacity(0.15),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        title: Text(
+          'Pokédex',
+          style: GoogleFonts.sedgwickAveDisplay(fontSize: 40),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  useSafeArea: true,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      // color: Colors.red.withOpacity(0.09),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.red.withOpacity(0.05),
+                            Colors.red.withOpacity(0.15),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      height: deviceWidth +
+                          MediaQuery.of(context).viewInsets.bottom,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Form(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: deviceWidth / 2 - 20,
+                                    child: TextFormField(
+                                      style: GoogleFonts.handlee(),
+                                      keyboardType: TextInputType.name,
+                                      controller: _searchController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Search',
+                                        hintText: 'pokemon name',
+                                        labelStyle: GoogleFonts.handlee(),
+                                        hintStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        // call search function
+                                      },
+                                      icon: const Icon(Icons.search)),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 25),
+                                    width: deviceWidth / 2 - 77,
+                                    child: DropdownButtonFormField<Sort>(
+                                      value: _sortBy,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _sortBy = value!;
+                                        });
+                                      },
+                                      items: Sort.values
+                                          .map<DropdownMenuItem<Sort>>(
+                                              (sortEnum) {
+                                        return DropdownMenuItem(
+                                          value: sortEnum,
+                                          child: Text(
+                                            sortEnum.value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Sort by',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: deviceWidth / 3 - 21,
+                                    child: DropdownButtonFormField<String>(
+                                      value: _region,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _region = value!;
+                                        });
+                                      },
+                                      items: _regions
+                                          .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Region',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 19),
+                                    width: deviceWidth / 3 - 21,
+                                    child: DropdownButtonFormField<String>(
+                                      value: _color,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _color = value!;
+                                        });
+                                      },
+                                      items: _colors
+                                          .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Color',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: deviceWidth / 3 - 21,
+                                    child: DropdownButtonFormField<String>(
+                                      value: _type,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _type = value!;
+                                        });
+                                      },
+                                      items: _types
+                                          .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Type',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: deviceWidth / 2 - 25,
+                                    child: DropdownButtonFormField<String>(
+                                      value: _habitat,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _habitat = value!;
+                                        });
+                                      },
+                                      items: _habitats
+                                          .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Habitat',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 25),
+                                    width: deviceWidth / 2 - 25,
+                                    child: DropdownButtonFormField<String>(
+                                      value: _pokedex,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _pokedex = value!;
+                                        });
+                                      },
+                                      items: _pokedexes
+                                          .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: GoogleFonts.handlee(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Pokedex',
+                                        labelStyle: GoogleFonts.handlee(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red),
+                                    child: Text(
+                                      'apply',
+                                      style: GoogleFonts.handlee(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  TextButton(
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      _sortBy = sortBy;
+                                      _region = region;
+                                      _color = color;
+                                      _type = type;
+                                      _habitat = habitat;
+                                      _pokedex = pokedex;
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'cancel',
+                                      style: GoogleFonts.handlee(
+                                          color: Colors.red, fontSize: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight)),
-                        height: deviceWidth +
-                            MediaQuery.of(context).viewInsets.bottom,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Form(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: deviceWidth / 2 - 20,
-                                      child: TextFormField(
-                                        style: GoogleFonts.handlee(),
-                                        keyboardType: TextInputType.name,
-                                        controller: _searchController,
-                                        decoration: InputDecoration(
-                                          labelText: 'Search',
-                                          hintText: 'pokemon name',
-                                          labelStyle: GoogleFonts.handlee(),
-                                          hintStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {
-                                          // call search function
-                                        },
-                                        icon: const Icon(Icons.search)),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 25),
-                                      width: deviceWidth / 2 - 77,
-                                      child: DropdownButtonFormField<Sort>(
-                                        value: _sortBy,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _sortBy = value!;
-                                          });
-                                        },
-                                        items: Sort.values
-                                            .map<DropdownMenuItem<Sort>>(
-                                                (sortEnum) {
-                                          return DropdownMenuItem(
-                                            value: sortEnum,
-                                            child: Text(
-                                              sortEnum.value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Sort by',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: deviceWidth / 3 - 21,
-                                      child: DropdownButtonFormField<String>(
-                                        value: _region,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _region = value!;
-                                          });
-                                        },
-                                        items: _regions
-                                            .map<DropdownMenuItem<String>>(
-                                                (value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Region',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 19),
-                                      width: deviceWidth / 3 - 21,
-                                      child: DropdownButtonFormField<String>(
-                                        value: _color,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _color = value!;
-                                          });
-                                        },
-                                        items: _colors
-                                            .map<DropdownMenuItem<String>>(
-                                                (value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Color',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: deviceWidth / 3 - 21,
-                                      child: DropdownButtonFormField<String>(
-                                        value: _type,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _type = value!;
-                                          });
-                                        },
-                                        items: _types
-                                            .map<DropdownMenuItem<String>>(
-                                                (value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Type',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: deviceWidth / 2 - 25,
-                                      child: DropdownButtonFormField<String>(
-                                        value: _habitat,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _habitat = value!;
-                                          });
-                                        },
-                                        items: _habitats
-                                            .map<DropdownMenuItem<String>>(
-                                                (value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Habitat',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 25),
-                                      width: deviceWidth / 2 - 25,
-                                      child: DropdownButtonFormField<String>(
-                                        value: _pokedex,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _pokedex = value!;
-                                          });
-                                        },
-                                        items: _pokedexes
-                                            .map<DropdownMenuItem<String>>(
-                                                (value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: GoogleFonts.handlee(),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Pokedex',
-                                          labelStyle: GoogleFonts.handlee(),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(
-                  Icons.menu,
-                )),
-          ],
-        ),
-        body: Center(child: content));
+                      ),
+                    );
+                  },
+                );
+              },
+              icon: const Icon(
+                Icons.menu,
+              )),
+        ],
+      ),
+      body: Center(
+        child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.red.withOpacity(0.05),
+                  Colors.red.withOpacity(0.15),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: content),
+      ),
+    );
   }
 }

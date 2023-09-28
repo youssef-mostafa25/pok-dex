@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/widgets/pokemon_item.dart';
 
 class PokemonVarietiesSliderRow extends StatelessWidget {
-  const PokemonVarietiesSliderRow({super.key, required this.pokemonIndecies});
+  const PokemonVarietiesSliderRow(
+      {super.key, required this.pokemonIndecies, required this.originalColor});
 
   final List<int> pokemonIndecies;
+  final Color originalColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
                 isHero: true,
                 isVariety: true,
                 isSamePokemon: false,
+                originalColor: originalColor,
               );
             }).toList(),
           )
@@ -38,6 +41,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
                       isHero: true,
                       isVariety: true,
                       isSamePokemon: false,
+                      originalColor: originalColor,
                     ),
                     const SizedBox(
                       width: 50,

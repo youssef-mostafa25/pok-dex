@@ -12,15 +12,18 @@ import 'package:pokedex/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonScreen extends StatefulWidget {
-  const PokemonScreen(
-      {super.key,
-      required this.pokemon,
-      this.pokemonSpecies,
-      required this.isVariety});
+  const PokemonScreen({
+    super.key,
+    required this.pokemon,
+    this.pokemonSpecies,
+    required this.isVariety,
+    this.originalColor,
+  });
 
   final Map pokemon;
   final Map? pokemonSpecies;
   final bool isVariety;
+  final Color? originalColor;
 
   @override
   State<PokemonScreen> createState() => _PokemonScreenState();
@@ -256,30 +259,15 @@ class _PokemonScreenState extends State<PokemonScreen> {
       typesResult += ', ${type['type']['name']}';
     }
     typesResult = typesResult.substring(2);
-    return !widget.isVariety
-        ? Text(
-            (types.isEmpty ? '' : 'Type: ') + typesResult,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.sedgwickAveDisplay(
-                fontSize: 30,
-                color: colorMap[widget.pokemonSpecies!['color']['name']] ??
-                    Colors.red),
-          )
-        : SizedBox(
-            height: 45,
-            child: GradientText(
-              (types.isEmpty ? '' : 'Type: ') + typesResult,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.sedgwickAveDisplay(
-                fontSize: 30.0,
-              ),
-              colors: const [
-                Color(0xFFff00ff), // Pink
-                Color(0xFF00ff00), // Green
-                Color(0xFF0000ff), // Blue
-              ],
-            ),
-          );
+    return Text(
+      (types.isEmpty ? '' : 'Type: ') + typesResult,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.sedgwickAveDisplay(
+          fontSize: 30,
+          color: !widget.isVariety
+              ? colorMap[widget.pokemonSpecies!['color']['name']] ?? Colors.red
+              : widget.originalColor),
+    );
   }
 
   @override
@@ -299,11 +287,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
       varieties = _varietiesList;
       randomText = _randomFlavourText;
     }
-    const varietyColors = [
-      Color(0xFFff00ff), // Pink
-      Color(0xFF00ff00), // Green
-      Color(0xFF0000ff), // Blue
-    ];
     Widget evoloutionChain = GradientText(
       'No Evoloution Chain',
       textAlign: TextAlign.center,
@@ -363,110 +346,114 @@ class _PokemonScreenState extends State<PokemonScreen> {
           );
 
     final pokemonColor = widget.isVariety
-        ? null
+        ? widget.originalColor!
         : colorMap[widget.pokemonSpecies!['color']['name']] ?? Colors.red;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: pokemonColor ?? varietyColors[2],
-        foregroundColor: !widget.isVariety ? Colors.white : varietyColors.first,
+        backgroundColor: pokemonColor,
+        foregroundColor: Colors.white,
         title: Center(
-          child: !widget.isVariety
-              ? Text(
-                  widget.pokemon['name'],
-                  style: GoogleFonts.sedgwickAveDisplay(
-                      color: const Color.fromRGBO(255, 255, 255, 1),
-                      fontSize: 40),
-                )
-              : GradientText(
-                  widget.pokemon['name'],
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.sedgwickAveDisplay(
-                    fontSize: 40,
-                  ),
-                  colors: [varietyColors[0], varietyColors[1]],
-                ),
+          child: Text(
+            widget.pokemon['name'],
+            style: GoogleFonts.sedgwickAveDisplay(
+                color: const Color.fromRGBO(255, 255, 255, 1), fontSize: 40),
+          ),
         ),
         centerTitle: true,
       ),
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Hero(
-                tag: widget.pokemon['id'],
-                child: image,
-              ),
-              _pokemonTypes,
-              const SizedBox(height: 50),
-              if (!widget.isVariety) randomText!,
-              const SizedBox(height: 50),
-              if (widget.pokemonSpecies != null)
-                PokemonTable(
-                  entries: [
-                    [
-                      const {'Gen': true},
-                      {widget.pokemonSpecies!['generation']['name']: false}
-                    ],
-                    [
-                      {_eggGroups[0]: true},
-                      {_eggGroups[1]: false}
-                    ],
-                    [
-                      const {'Growth Rate': true},
-                      {widget.pokemonSpecies!['growth_rate']['name']: false}
-                    ],
-                    [
-                      const {'Habitat': true},
-                      {widget.pokemonSpecies!['habitat']['name']: false}
-                    ],
-                  ],
-                  pokemonColor: pokemonColor,
-                  varietyColors: varietyColors,
-                  tableName: 'Pokémon Info',
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                pokemonColor.withOpacity(0.05),
+                pokemonColor.withOpacity(0.2),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: widget.pokemon['id'],
+                  child: image,
                 ),
-              if (widget.pokemonSpecies != null) const SizedBox(height: 70),
-              if (abilities != null)
-                PokemonTable(
-                  entries: abilities,
-                  pokemonColor: pokemonColor,
-                  tableName: 'Abilities',
-                  varietyColors: varietyColors,
-                ),
-              if (abilities != null) const SizedBox(height: 70),
-              // if (moves != null)
-              //   PokemonTable(
-              //     entries: moves,
-              //     pokemonColor: pokemonColor,
-              //     tableName: 'Moves',
-              //     varietyColors: varietyColors,
-              //   ),
-              // if (moves != null) const SizedBox(height: 70),
-              if (stats != null)
-                PokemonTable(
-                  entries: stats,
-                  pokemonColor: pokemonColor,
-                  tableName: 'Stats',
-                  varietyColors: varietyColors,
-                ),
-              if (stats != null) const SizedBox(height: 70),
-              if (!widget.isVariety) evoloutionChain,
-              if (!widget.isVariety) const SizedBox(height: 70),
-              if (!widget.isVariety)
-                GradientText(
-                  varieties != null ? 'Varities' : 'No Varities',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.sedgwickAveDisplay(
-                    fontSize: 30.0,
+                _pokemonTypes,
+                const SizedBox(height: 50),
+                if (!widget.isVariety) randomText!,
+                const SizedBox(height: 50),
+                if (widget.pokemonSpecies != null)
+                  PokemonTable(
+                    entries: [
+                      [
+                        const {'Gen': true},
+                        {widget.pokemonSpecies!['generation']['name']: false}
+                      ],
+                      [
+                        {_eggGroups[0]: true},
+                        {_eggGroups[1]: false}
+                      ],
+                      [
+                        const {'Growth Rate': true},
+                        {widget.pokemonSpecies!['growth_rate']['name']: false}
+                      ],
+                      [
+                        const {'Habitat': true},
+                        {widget.pokemonSpecies!['habitat']['name']: false}
+                      ],
+                    ],
+                    pokemonColor: pokemonColor,
+                    tableName: 'Pokémon Info',
                   ),
-                  colors: varietyColors,
-                ),
-              if (!widget.isVariety && varieties != null)
-                PokemonVarietiesSliderRow(pokemonIndecies: varieties!),
-              const SizedBox(height: 80)
-            ],
+                if (widget.pokemonSpecies != null) const SizedBox(height: 70),
+                if (abilities != null)
+                  PokemonTable(
+                    entries: abilities,
+                    pokemonColor: pokemonColor,
+                    tableName: 'Abilities',
+                  ),
+                if (abilities != null) const SizedBox(height: 70),
+                // if (moves != null)
+                //   PokemonTable(
+                //     entries: moves,
+                //     pokemonColor: pokemonColor,
+                //     tableName: 'Moves',
+                //     varietyColors: varietyColors,
+                //   ),
+                // if (moves != null) const SizedBox(height: 70),
+                if (stats != null)
+                  PokemonTable(
+                    entries: stats,
+                    pokemonColor: pokemonColor,
+                    tableName: 'Stats',
+                  ),
+                if (stats != null) const SizedBox(height: 70),
+                if (!widget.isVariety) evoloutionChain,
+                if (!widget.isVariety) const SizedBox(height: 70),
+                if (!widget.isVariety)
+                  GradientText(
+                    varieties != null ? 'Varities' : 'No Varities',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.sedgwickAveDisplay(
+                      fontSize: 30.0,
+                    ),
+                    colors: const [
+                      Color(0xFFff00ff),
+                      Color(0xFF00ff00),
+                      Color(0xFF0000ff),
+                    ],
+                  ),
+                if (!widget.isVariety && varieties != null)
+                  PokemonVarietiesSliderRow(
+                      pokemonIndecies: varieties!, originalColor: pokemonColor),
+                const SizedBox(height: 80)
+              ],
+            ),
           ),
         ),
       ),
