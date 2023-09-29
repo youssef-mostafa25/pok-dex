@@ -33,11 +33,29 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   final List _pokedexes = ['all'];
   String _pokedex = 'all';
 
+  String _getPokemonNameByEntry(Map entry) {
+    // ignore: prefer_if_null_operators
+    return entry['name'] != null
+        ? entry['name']
+        : entry['pokemon'] != null
+            ? entry['pokemon']['name']
+            : entry['pokemon_species']['name'];
+  }
+
+  String _getPokemonUrlByEntry(Map entry) {
+    // ignore: prefer_if_null_operators
+    return entry['url'] != null
+        ? entry['url']
+        : entry['pokemon'] != null
+            ? entry['pokemon']['url']
+            : entry['pokemon_species']['url'];
+  }
+
   void _fillPokemonNamesAndIds(List entries, List<String> pokemonNamesList,
       List<String> pokemonIdsList) {
     for (final entry in entries) {
-      pokemonNamesList.add(entry['name']);
-      String url = entry['url'];
+      pokemonNamesList.add(_getPokemonNameByEntry(entry));
+      String url = _getPokemonUrlByEntry(entry);
       List<String> segments = url.split("/");
       pokemonIdsList.add(segments[segments.length - 2]);
     }
@@ -123,6 +141,13 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     }
   }
 
+  List _getResult(Map decodedResponse) {
+    return decodedResponse['results'] ??
+        decodedResponse['pokemon_species'] ??
+        decodedResponse['pokemon'] ??
+        decodedResponse['pokemon_entries'];
+  }
+
   void _loadPokemon() async {
     setState(() {
       _isGettingPokemon = true;
@@ -147,14 +172,14 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       var response = await http.get(urls[0]);
       var decodedResponse = json.decode(response.body);
       _fillPokemonNamesAndIds(
-          decodedResponse['results'], pokemonNames, pokemonIds);
+          _getResult(decodedResponse), pokemonNames, pokemonIds);
       for (int i = 1; i < urls.length; i++) {
         List<String> pokemonNamesList = [];
         List<String> pokemonIdsList = [];
         var response = await http.get(urls[i]);
         var decodedResponse = json.decode(response.body);
         _fillPokemonNamesAndIds(
-            decodedResponse['results'], pokemonNamesList, pokemonIdsList);
+            _getResult(decodedResponse), pokemonNamesList, pokemonIdsList);
         _andWithPokemonNamesAndIds(pokemonNamesList, pokemonIdsList);
       }
       if (_searchValue.isNotEmpty) _filterBySearchValue();
