@@ -1,5 +1,15 @@
 # Pokédex
 
+## Table of Contents
+
+1. [ Description. ](#desc)
+2. [ Features. ](#feats)
+3. [ Install and Run. ](#setup)
+4. [ Compatibility. ](#comp)
+5. [ Credits. ](#credits)
+
+<a name="desc"></a>
+
 ## Description
 
 ### 1. Project summary:
@@ -11,6 +21,8 @@ The Pokédex is a comprehensive mobile application designed for Pokémon enthusi
 - PokéAPI: I chose to utilize the PokéAPI for this project due to its comprehensive and well-structured database of Pokémon information. The PokéAPI offers a wealth of data, including detailed profiles, abilities, types, and evolutions for every Pokémon in the series. Its developer-friendly design, regular updates, and open accessibility make it an ideal resource for creating a robust and up-to-date Pokédex application. By leveraging the PokéAPI, we ensure that our users have access to the most accurate and comprehensive Pokémon information available, enhancing their overall experience and knowledge of the Pokémon world.
 
 - Flutter: Flutter was chosen for this project for several compelling reasons. Firstly, its cross-platform nature allows us to develop a single codebase that runs seamlessly on both Android and iOS devices, reducing development time and effort. Secondly, Flutter offers a rich set of pre-designed widgets and a highly customizable UI, enabling us to create a visually appealing and consistent user experience. In summary, Flutter empowers us to create feature-rich, polished apps efficiently, making it the ideal framework for this project.
+
+<a name="feats"></a>
 
 ## Features
 
@@ -28,7 +40,7 @@ The Pokédex is a comprehensive mobile application designed for Pokémon enthusi
 
 ### 3. Detailed Pokémon Profiles:
 
-- Access comprehensive profiles for each Pokémon, including base stats, moves, pokémon varieties, evolutions, abilities, and other pokémon details.
+- Access comprehensive profiles for each Pokémon, including base stats, moves, pokémon varieties, evolutions, abilities, and other Pokémon details.
 
 ### 4. Interactive Interface:
 
@@ -38,6 +50,8 @@ The Pokédex is a comprehensive mobile application designed for Pokémon enthusi
 ### 5. Real-time Updates:
 
 - Stay up-to-date with the latest Pokémon releases and updates.
+
+<a name="setup"></a>
 
 ## How to Install and Run the Project
 
@@ -52,15 +66,21 @@ git clone https://github.com/youssef-mostafa25/pokedex.git
 ### 2. Running the project:
 
 - Make sure you have Flutter installed on your system.
-- Execute the following command while in the cloned project directiory
+- Open your preferred simulator/emulator.
+- Choose your simulator/emulator to be run in your IDE.
+- Execute the following command while in the cloned project directiory.
 
 ```
 flutter run
 ```
 
+<a name="comp"></a>
+
 ## Compatibility:
 
 Available on both Android and iOS devices.
+
+<a name="credits"></a>
 
 ## Credits
 
