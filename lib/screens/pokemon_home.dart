@@ -22,8 +22,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _errorFillingFilters = false;
   String _searchValue = '';
   Sort _sortBy = Sort.idAscending;
-  final List _regions = ['all'];
-  String _region = 'all';
   final List _colors = ['all'];
   String _color = 'all';
   final List _types = ['all'];
@@ -63,11 +61,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
 
   List<Uri> get _filterUrls {
     final List<Uri> result = [];
-    if (_region != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/region/$_region'),
-      );
-    }
     if (_color != 'all') {
       result.add(
         Uri.https('pokeapi.co', 'api/v2/pokemon-color/$_color'),
@@ -202,7 +195,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   void _showModalBottomSheet() {
     var tempSearchValue = _searchValue;
     var tempSortBy = _sortBy;
-    var tempRegion = _region;
     var tempColor = _color;
     var tempType = _type;
     var tempHabitat = _habitat;
@@ -297,35 +289,9 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(
-                                  width: deviceWidth / 3 - 21,
-                                  child: DropdownButtonFormField<String>(
-                                    value: _region,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        tempRegion = value!;
-                                      });
-                                    },
-                                    items: _regions
-                                        .map<DropdownMenuItem<String>>((value) {
-                                      return DropdownMenuItem(
-                                        value: value,
-                                        child: Text(
-                                          value,
-                                          style: GoogleFonts.handlee(),
-                                        ),
-                                      );
-                                    }).toList(),
-                                    decoration: InputDecoration(
-                                      labelText: 'Region',
-                                      labelStyle: GoogleFonts.handlee(),
-                                    ),
-                                  ),
-                                ),
                                 Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 19),
-                                  width: deviceWidth / 3 - 21,
+                                  margin: const EdgeInsets.only(right: 25),
+                                  width: deviceWidth / 2 - 25,
                                   child: DropdownButtonFormField<String>(
                                     value: _color,
                                     onChanged: (value) {
@@ -350,7 +316,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   ),
                                 ),
                                 SizedBox(
-                                  width: deviceWidth / 3 - 21,
+                                  width: deviceWidth / 2 - 25,
                                   child: DropdownButtonFormField<String>(
                                     value: _type,
                                     onChanged: (value) {
@@ -441,7 +407,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                     setState(() {
                                       _searchValue = tempSearchValue;
                                       _sortBy = tempSortBy;
-                                      _region = tempRegion;
                                       _color = tempColor;
                                       _type = tempType;
                                       _habitat = tempHabitat;
@@ -493,13 +458,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
 
   void _fillFilters() {
     try {
-      final regionUrl = Uri.https('pokeapi.co', 'api/v2/region/');
       final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
       final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
       final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
       final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
 
-      _fillFilter(regionUrl, _regions);
       _fillFilter(colorUrl, _colors);
       _fillFilter(typeUrl, _types);
       _fillFilter(habitatUrl, _habitats);
