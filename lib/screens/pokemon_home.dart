@@ -85,23 +85,33 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   }
 
   void _andWithPokemonNamesAndIds(
-      List<String> pokemonNamesList, List<String> pokemonIdsList) {
+      List<String> pokemonNamesTemp, List<String> pokemonIdsTemp) {
     List<String> pokemonNamesAfterAnding = [];
     List<String> pokemonIdsAfterAnding = [];
-    int idsCounter = 0;
-    int idsListCounter = 0;
-    while (idsCounter < pokemonIds.length &&
-        idsListCounter < pokemonIdsList.length) {
-      if (pokemonIds[idsCounter].compareTo(pokemonIdsList[idsListCounter]) >
-          0) {
-        idsListCounter++;
-      } else if (pokemonIds[idsCounter]
-              .compareTo(pokemonIdsList[idsListCounter]) <
-          0) {
-        idsCounter++;
-      } else {
-        pokemonNamesAfterAnding.add(pokemonNames[idsCounter]);
-        pokemonIdsAfterAnding.add(pokemonIds[idsCounter]);
+    // int idsCounter = 0;
+    // int idsTempCounter = 0;
+    // while (idsCounter < pokemonIds.length &&
+    //     idsTempCounter < pokemonIdsTemp.length) {
+    //   if (pokemonIds[idsCounter].compareTo(pokemonIdsTemp[idsTempCounter]) >
+    //       0) {
+    //     idsTempCounter++;
+    //   } else if (pokemonIds[idsCounter]
+    //           .compareTo(pokemonIdsTemp[idsTempCounter]) <
+    //       0) {
+    //     idsCounter++;
+    //   } else {
+    //     pokemonNamesAfterAnding.add(pokemonNames[idsCounter]);
+    //     pokemonIdsAfterAnding.add(pokemonIds[idsCounter]);
+    //     idsCounter++;
+    //     idsTempCounter++;
+    //   }
+    // }
+    for (final pokemonId in pokemonIds) {
+      for (final pokemonIdTemp in pokemonIdsTemp) {
+        if (pokemonId.compareTo(pokemonIdTemp) == 0) {
+          pokemonNamesAfterAnding.add(pokemonIdTemp);
+          pokemonIdsAfterAnding.add(pokemonId);
+        }
       }
     }
     pokemonNames = pokemonNamesAfterAnding;
@@ -167,13 +177,13 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       _fillPokemonNamesAndIds(
           _getResult(decodedResponse), pokemonNames, pokemonIds);
       for (int i = 1; i < urls.length; i++) {
-        List<String> pokemonNamesList = [];
-        List<String> pokemonIdsList = [];
+        List<String> pokemonNamesTemp = [];
+        List<String> pokemonIdsTemp = [];
         var response = await http.get(urls[i]);
         var decodedResponse = json.decode(response.body);
         _fillPokemonNamesAndIds(
-            _getResult(decodedResponse), pokemonNamesList, pokemonIdsList);
-        _andWithPokemonNamesAndIds(pokemonNamesList, pokemonIdsList);
+            _getResult(decodedResponse), pokemonNamesTemp, pokemonIdsTemp);
+        _andWithPokemonNamesAndIds(pokemonNamesTemp, pokemonIdsTemp);
       }
       if (_searchValue.isNotEmpty) _filterBySearchValue();
       _applySort();

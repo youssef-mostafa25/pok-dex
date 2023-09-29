@@ -13,8 +13,7 @@ class PokemonGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return pokemonNamesOrIds.isEmpty
         ? const SizedBox(
-            width: double.infinity,
-            child: Center(heightFactor: 35, child: Text('No results')))
+            width: double.infinity, child: Center(child: Text('No results')))
         : Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

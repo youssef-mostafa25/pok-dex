@@ -394,7 +394,11 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     entries: [
                       [
                         const {'Generation': true},
-                        {widget.pokemonSpecies!['generation']['name']: false}
+                        {
+                          widget.pokemonSpecies!['generation'] != null
+                              ? widget.pokemonSpecies!['generation']['name']
+                              : 'null': false
+                        }
                       ],
                       [
                         {_eggGroups[0]: true},
@@ -402,11 +406,19 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       ],
                       [
                         const {'Growth Rate': true},
-                        {widget.pokemonSpecies!['growth_rate']['name']: false}
+                        {
+                          widget.pokemonSpecies!['growth_rate'] != null
+                              ? widget.pokemonSpecies!['growth_rate']['name']
+                              : 'null': false
+                        }
                       ],
                       [
                         const {'Habitat': true},
-                        {widget.pokemonSpecies!['habitat']['name']: false}
+                        {
+                          widget.pokemonSpecies!['habitat'] != null
+                              ? widget.pokemonSpecies!['habitat']['name']
+                              : 'null': false
+                        }
                       ],
                     ],
                     pokemonColor: pokemonColor,
