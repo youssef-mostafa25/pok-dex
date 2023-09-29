@@ -14,8 +14,8 @@ class PokemonHomeScreen extends StatefulWidget {
 }
 
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
-  var _isGettingPokemonCount = true;
-  var _errorGettingPokemonCount = false;
+  var _isGettingPokemon = true;
+  var _errorGettingPokemon = false;
   List<String> pokemonNames = [];
   List<String> pokemonIds = [];
   var _isFillingFilters = true;
@@ -102,14 +102,17 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       if (!pokemonNames[i].contains(_searchValue)) {
         pokemonNames.removeAt(i);
         pokemonIds.removeAt(i);
+        i--;
       }
     }
   }
 
   void _applySort() {
     if (_sortBy == Sort.idAscending || _sortBy == Sort.idDescending) {
-      if (_sortBy == Sort.idDescending) {
-        pokemonIds.sort((a, b) => b.compareTo(a));
+      if (_sortBy == Sort.idAscending) {
+        pokemonIds.sort((a, b) => int.parse(a).compareTo(int.parse(b)));
+      } else {
+        pokemonIds.sort((a, b) => int.parse(b).compareTo(int.parse(a)));
       }
     } else {
       if (_sortBy == Sort.nameAscending) {
@@ -121,6 +124,9 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   }
 
   void _loadPokemon() async {
+    setState(() {
+      _isGettingPokemon = true;
+    });
     pokemonIds = [];
     pokemonNames = [];
     try {
@@ -155,14 +161,14 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       _applySort();
       if (mounted) {
         setState(() {
-          _isGettingPokemonCount = false;
+          _isGettingPokemon = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorGettingPokemonCount = true;
-          _isGettingPokemonCount = false;
+          _errorGettingPokemon = true;
+          _isGettingPokemon = false;
         });
       }
     }
@@ -498,7 +504,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   Widget build(BuildContext context) {
     Widget content;
 
-    if (_errorGettingPokemonCount) {
+    if (_errorGettingPokemon) {
       content = const SizedBox(
         width: double.infinity,
         height: double.infinity,
@@ -508,7 +514,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
           ),
         ),
       );
-    } else if (_isGettingPokemonCount) {
+    } else if (_isGettingPokemon) {
       content = const SizedBox(
         width: double.infinity,
         height: double.infinity,
