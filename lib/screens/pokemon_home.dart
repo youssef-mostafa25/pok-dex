@@ -22,37 +22,137 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _errorFillingFilters = false;
   String _searchValue = '';
   Sort _sortBy = Sort.idAscending;
-  List _regions = ['all'];
+  final List _regions = ['all'];
   String _region = 'all';
-  List _colors = ['all'];
+  final List _colors = ['all'];
   String _color = 'all';
-  List _types = ['all'];
+  final List _types = ['all'];
   String _type = 'all';
-  List _habitats = ['all'];
+  final List _habitats = ['all'];
   String _habitat = 'all';
-  List _pokedexes = ['all'];
+  final List _pokedexes = ['all'];
   String _pokedex = 'all';
 
-  void fillPokemonNamesAndIds(List entries) {
+  void _fillPokemonNamesAndIds(List entries, List<String> pokemonNamesList,
+      List<String> pokemonIdsList) {
     for (final entry in entries) {
-      pokemonNames.add(entry['name']);
+      pokemonNamesList.add(entry['name']);
       String url = entry['url'];
       List<String> segments = url.split("/");
-      pokemonIds.add(segments[segments.length - 2]);
+      pokemonIdsList.add(segments[segments.length - 2]);
     }
   }
 
-  void _getPokemonNumber() async {
-    try {
-      final url = Uri.https('pokeapi.co', 'api/v2/pokemon-species', {
-        'limit': '100000',
-        'offset': '0',
-        'queryParamWithQuestionMark': '?'
-      });
+  List<Uri> get _filterUrls {
+    final List<Uri> result = [];
+    if (_region != 'all') {
+      result.add(
+        Uri.https('pokeapi.co', 'api/v2/region/$_region'),
+      );
+    }
+    if (_color != 'all') {
+      result.add(
+        Uri.https('pokeapi.co', 'api/v2/pokemon-color/$_color'),
+      );
+    }
+    if (_type != 'all') {
+      result.add(
+        Uri.https('pokeapi.co', 'api/v2/type/$_type'),
+      );
+    }
+    if (_habitat != 'all') {
+      result.add(
+        Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/$_habitat'),
+      );
+    }
+    if (_pokedex != 'all') {
+      result.add(
+        Uri.https('pokeapi.co', 'api/v2/pokedex/$_pokedex'),
+      );
+    }
+    return result;
+  }
 
-      final response = await http.get(url);
-      final decodedResponse = json.decode(response.body);
-      fillPokemonNamesAndIds(decodedResponse['results']);
+  void _andWithPokemonNamesAndIds(
+      List<String> pokemonNamesList, List<String> pokemonIdsList) {
+    List<String> pokemonNamesAfterAnding = [];
+    List<String> pokemonIdsAfterAnding = [];
+    int idsCounter = 0;
+    int idsListCounter = 0;
+    while (idsCounter < pokemonIds.length &&
+        idsListCounter < pokemonIdsList.length) {
+      if (pokemonIds[idsCounter].compareTo(pokemonIdsList[idsListCounter]) >
+          0) {
+        idsListCounter++;
+      } else if (pokemonIds[idsCounter]
+              .compareTo(pokemonIdsList[idsListCounter]) <
+          0) {
+        idsCounter++;
+      } else {
+        pokemonNamesAfterAnding.add(pokemonNames[idsCounter]);
+        pokemonIdsAfterAnding.add(pokemonIds[idsCounter]);
+      }
+    }
+    pokemonNames = pokemonNamesAfterAnding;
+    pokemonIds = pokemonIdsAfterAnding;
+  }
+
+  void _filterBySearchValue() {
+    for (int i = 0; i < pokemonNames.length; i++) {
+      if (!pokemonNames[i].contains(_searchValue)) {
+        pokemonNames.removeAt(i);
+        pokemonIds.removeAt(i);
+      }
+    }
+  }
+
+  void _applySort() {
+    if (_sortBy == Sort.idAscending || _sortBy == Sort.idDescending) {
+      if (_sortBy == Sort.idDescending) {
+        pokemonIds.sort((a, b) => b.compareTo(a));
+      }
+    } else {
+      if (_sortBy == Sort.nameAscending) {
+        pokemonNames.sort((a, b) => a.compareTo(b));
+      } else {
+        pokemonNames.sort((a, b) => b.compareTo(a));
+      }
+    }
+  }
+
+  void _loadPokemon() async {
+    pokemonIds = [];
+    pokemonNames = [];
+    try {
+      final List<Uri> urls = _filterUrls;
+      if (urls.isEmpty) {
+        urls.add(
+          Uri.https(
+            'pokeapi.co',
+            'api/v2/pokemon-species',
+            {
+              'limit': '100000',
+              'offset': '0',
+              'queryParamWithQuestionMark': '?',
+            },
+          ),
+        );
+      }
+      var response = await http.get(urls[0]);
+      var decodedResponse = json.decode(response.body);
+      _fillPokemonNamesAndIds(
+          decodedResponse['results'], pokemonNames, pokemonIds);
+      for (int i = 1; i < urls.length; i++) {
+        List<String> pokemonNamesList = [];
+        List<String> pokemonIdsList = [];
+        var response = await http.get(urls[i]);
+        var decodedResponse = json.decode(response.body);
+        _fillPokemonNamesAndIds(
+            decodedResponse['results'], pokemonNamesList, pokemonIdsList);
+        _andWithPokemonNamesAndIds(pokemonNamesList, pokemonIdsList);
+      }
+      if (_searchValue.isNotEmpty) _filterBySearchValue();
+      _applySort();
       if (mounted) {
         setState(() {
           _isGettingPokemonCount = false;
@@ -316,6 +416,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                       _habitat = tempHabitat;
                                       _pokedex = tempPokedex;
                                     });
+                                    _loadPokemon();
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -390,7 +491,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   void initState() {
     super.initState();
     _fillFilters();
-    _getPokemonNumber();
+    _loadPokemon();
   }
 
   @override
@@ -425,7 +526,12 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   'Showing resluts for \'$_searchValue\'',
                   style: GoogleFonts.handlee(fontSize: 17),
                 )),
-          PokemonGrid(pokemonNamesOrIds: pokemonIds),
+          PokemonGrid(
+            pokemonNamesOrIds:
+                _sortBy == Sort.idAscending || _sortBy == Sort.idDescending
+                    ? pokemonIds
+                    : pokemonNames,
+          ),
         ],
       );
     }
