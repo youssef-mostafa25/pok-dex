@@ -3,7 +3,7 @@ the user should be able to view pokemon/variety info ✅
 the user should be able to view all evolutions of a pokemon when on the pokemon's screen ✅
 the user should be able to view all varieties of a pokemon when on the pokemon's screen ✅
 the user should be able to sort pokemon by id, name ✅
-the user should be able to filter pokemon by pokedex, type(s), color, habitat
+the user should be able to filter pokemon by type(s), color, habitat, pokedex ✅
 the user should be able to search for pokemon full name, part of the name ✅
 
 # later

@@ -88,24 +88,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       List<String> pokemonNamesTemp, List<String> pokemonIdsTemp) {
     List<String> pokemonNamesAfterAnding = [];
     List<String> pokemonIdsAfterAnding = [];
-    // int idsCounter = 0;
-    // int idsTempCounter = 0;
-    // while (idsCounter < pokemonIds.length &&
-    //     idsTempCounter < pokemonIdsTemp.length) {
-    //   if (pokemonIds[idsCounter].compareTo(pokemonIdsTemp[idsTempCounter]) >
-    //       0) {
-    //     idsTempCounter++;
-    //   } else if (pokemonIds[idsCounter]
-    //           .compareTo(pokemonIdsTemp[idsTempCounter]) <
-    //       0) {
-    //     idsCounter++;
-    //   } else {
-    //     pokemonNamesAfterAnding.add(pokemonNames[idsCounter]);
-    //     pokemonIdsAfterAnding.add(pokemonIds[idsCounter]);
-    //     idsCounter++;
-    //     idsTempCounter++;
-    //   }
-    // }
     for (final pokemonId in pokemonIds) {
       for (final pokemonIdTemp in pokemonIdsTemp) {
         if (pokemonId.compareTo(pokemonIdTemp) == 0) {
@@ -491,6 +473,24 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     }
   }
 
+  String get _queryResultText {
+    String result = '\nShowing resluts for\n\n';
+    if (_searchValue.isNotEmpty) {
+      result += 'search value: \'$_searchValue\'';
+    }
+    if (_color != 'all' ||
+        _type != 'all' ||
+        _habitat != 'all' ||
+        _pokedex != 'all') {
+      if (_searchValue.isNotEmpty) result += '\n';
+      if (_color != 'all') result += 'color: \'$_color\'\n';
+      if (_type != 'all') result += 'type: \'$_type\'\n';
+      if (_habitat != 'all') result += 'habitat: \'$_habitat\'\n';
+      if (_pokedex != 'all') result += 'pokédex: \'$_pokedex\'\n';
+    }
+    return result.substring(0, result.length - 1);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -523,11 +523,16 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     } else {
       content = Column(
         children: [
-          if (_searchValue != '')
+          if (_searchValue.isNotEmpty ||
+              _color != 'all' ||
+              _type != 'all' ||
+              _habitat != 'all' ||
+              _pokedex != 'all')
             Container(
                 margin: const EdgeInsets.all(24),
                 child: Text(
-                  'Showing resluts for \'$_searchValue\'',
+                  _queryResultText,
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.handlee(fontSize: 17),
                 )),
           PokemonGrid(
@@ -559,17 +564,18 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
       ),
       body: Center(
         child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.red.withOpacity(0.05),
-                  Colors.red.withOpacity(0.15),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.red.withOpacity(0.05),
+                Colors.red.withOpacity(0.15),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: content),
+          ),
+          child: content,
+        ),
       ),
     );
   }
