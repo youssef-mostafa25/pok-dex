@@ -1,2 +1,3 @@
-pokemon.dart: fix pixel overflow
 pokemon_table.dart: fix table with large width
+pokemon_grid: center text
+pokemon_home.dart: sort by id and search by value not working together
