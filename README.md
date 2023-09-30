@@ -65,9 +65,10 @@ git clone https://github.com/youssef-mostafa25/pokedex.git
 
 ### 2. Running the project:
 
-- Make sure you have Flutter installed on your system.
-- Open your preferred simulator/emulator.
-- Choose your simulator/emulator to be run in your IDE.
+- Make sure you have Flutter installed on your system (minimum version required flutter 3.1.1).
+  - <a href = 'https://docs.flutter.dev/get-started/install'>check this link for help</a>
+- Open your preferred simulator/emulator (recommended simulator/emulator iPhone 15 pro max).
+- Choose the simulator/emulator to be run in your IDE.
 - Execute the following command while in the cloned project directiory.
 
 ```
