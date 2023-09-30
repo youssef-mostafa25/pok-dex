@@ -103,6 +103,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   void _filterBySearchValue() {
     for (int i = 0; i < pokemonNames.length; i++) {
       if (!pokemonNames[i].contains(_searchValue)) {
+        // todo sort by id and search by value not working together
         pokemonNames.removeAt(i);
         pokemonIds.removeAt(i);
         i--;
