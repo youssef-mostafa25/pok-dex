@@ -11,12 +11,12 @@
 
 #### 2. Changes made:
 
-- Checklist of each change made in this PR.
+- write a checklist of each change made in this PR.
 
 ### Blockers:
 
 - Explain the blocker.
-- Where is the blocker in your code.
+- Write the location of blocker in your code.
 
 ### Manual test:
 
@@ -29,7 +29,7 @@
 
 ### Self review for your code:
 
-- Checklist of what you reviewed.
+- Write a checklist of what you reviewed.
 
 ### Update the documentations:
 
@@ -38,4 +38,4 @@
 ### Write automatic tests:
 
 - Make sure you've written automatic tests if needed.
-- Where are the test files, and what's their names?
+- Write the locations of the test files, and mention their names?
