@@ -558,7 +558,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
           IconButton(
               onPressed: _showModalBottomSheet,
               icon: const Icon(
-                Icons.menu,
+                Icons.filter_alt,
               )),
         ],
       ),
