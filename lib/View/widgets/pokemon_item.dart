@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:pokedex/screens/pokemon.dart';
+import 'package:pokedex/View/screens/pokemon_screen.dart';
 
 class PokemonItem extends StatefulWidget {
   const PokemonItem({
@@ -33,48 +32,6 @@ class _PokemonItemState extends State<PokemonItem> {
   Map? _pokemonSpecies;
   var _errorPokemonSpecies = false;
   var _isGettingPokemonSpecies = true;
-
-  void _getPokemon() async {
-    try {
-      final url =
-          Uri.https('pokeapi.co', 'api/v2/pokemon/${widget.pokemonNameOrId}/');
-      final response = await http.get(url);
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = false;
-          _pokemon = jsonDecode(response.body);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = false;
-          _errorPokemon = true;
-        });
-      }
-    }
-  }
-
-  void _getPokemonSpecies() async {
-    try {
-      final url = Uri.https(
-          'pokeapi.co', 'api/v2/pokemon-species/${widget.pokemonNameOrId}/');
-      final response = await http.get(url);
-      if (mounted) {
-        setState(() {
-          _isGettingPokemonSpecies = false;
-          _pokemonSpecies = jsonDecode(response.body);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isGettingPokemonSpecies = false;
-          _errorPokemonSpecies = true;
-        });
-      }
-    }
-  }
 
   @override
   void initState() {

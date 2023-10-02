@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:pokedex/static_data.dart';
-import 'package:pokedex/widgets/pokemon_grid.dart';
+import 'package:pokedex/Model/static_data.dart';
+import 'package:pokedex/View/widgets/pokemon_grid.dart';
 
 class PokemonHomeScreen extends StatefulWidget {
   const PokemonHomeScreen({super.key});
@@ -30,160 +29,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   String _habitat = 'all';
   final List _pokedexes = ['all'];
   String _pokedex = 'all';
-
-  String _getPokemonNameByEntry(Map entry) {
-    // ignore: prefer_if_null_operators
-    return entry['name'] != null
-        ? entry['name']
-        : entry['pokemon'] != null
-            ? entry['pokemon']['name']
-            : entry['pokemon_species']['name'];
-  }
-
-  String _getPokemonUrlByEntry(Map entry) {
-    // ignore: prefer_if_null_operators
-    return entry['url'] != null
-        ? entry['url']
-        : entry['pokemon'] != null
-            ? entry['pokemon']['url']
-            : entry['pokemon_species']['url'];
-  }
-
-  void _fillPokemonNamesAndIds(List entries, List<String> pokemonNamesList,
-      List<String> pokemonIdsList) {
-    for (final entry in entries) {
-      pokemonNamesList.add(_getPokemonNameByEntry(entry));
-      String url = _getPokemonUrlByEntry(entry);
-      List<String> segments = url.split("/");
-      pokemonIdsList.add(segments[segments.length - 2]);
-    }
-  }
-
-  List<Uri> get _filterUrls {
-    final List<Uri> result = [];
-    if (_color != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokemon-color/$_color'),
-      );
-    }
-    if (_type != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/type/$_type'),
-      );
-    }
-    if (_habitat != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/$_habitat'),
-      );
-    }
-    if (_pokedex != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokedex/$_pokedex'),
-      );
-    }
-    return result;
-  }
-
-  void _andWithPokemonNamesAndIds(
-      List<String> pokemonNamesTemp, List<String> pokemonIdsTemp) {
-    List<String> pokemonNamesAfterAnding = [];
-    List<String> pokemonIdsAfterAnding = [];
-    for (final pokemonId in pokemonIds) {
-      for (final pokemonIdTemp in pokemonIdsTemp) {
-        if (pokemonId.compareTo(pokemonIdTemp) == 0) {
-          pokemonNamesAfterAnding.add(pokemonIdTemp);
-          pokemonIdsAfterAnding.add(pokemonId);
-        }
-      }
-    }
-    pokemonNames = pokemonNamesAfterAnding;
-    pokemonIds = pokemonIdsAfterAnding;
-  }
-
-  void _filterBySearchValue() {
-    for (int i = 0; i < pokemonNames.length; i++) {
-      if (!pokemonNames[i].contains(_searchValue)) {
-        // todo sort by id and search by value not working together
-        pokemonNames.removeAt(i);
-        pokemonIds.removeAt(i);
-        i--;
-      }
-    }
-  }
-
-  void _applySort() {
-    if (_sortBy == Sort.idAscending || _sortBy == Sort.idDescending) {
-      if (_sortBy == Sort.idAscending) {
-        pokemonIds.sort((a, b) => int.parse(a).compareTo(int.parse(b)));
-      } else {
-        pokemonIds.sort((a, b) => int.parse(b).compareTo(int.parse(a)));
-      }
-    } else {
-      if (_sortBy == Sort.nameAscending) {
-        pokemonNames.sort((a, b) => a.compareTo(b));
-      } else {
-        pokemonNames.sort((a, b) => b.compareTo(a));
-      }
-    }
-  }
-
-  List _getResult(Map decodedResponse) {
-    return decodedResponse['results'] ??
-        decodedResponse['pokemon_species'] ??
-        decodedResponse['pokemon'] ??
-        decodedResponse['pokemon_entries'];
-  }
-
-  void _loadPokemon() async {
-    setState(() {
-      _isGettingPokemon = true;
-    });
-    pokemonIds = [];
-    pokemonNames = [];
-    try {
-      final List<Uri> urls = _filterUrls;
-      if (urls.isEmpty) {
-        urls.add(
-          Uri.https(
-            'pokeapi.co',
-            'api/v2/pokemon-species',
-            {
-              'limit': '100000',
-              'offset': '0',
-              'queryParamWithQuestionMark': '?',
-            },
-          ),
-        );
-      }
-      var response = await http.get(urls[0]);
-      var decodedResponse = json.decode(response.body);
-      _fillPokemonNamesAndIds(
-          _getResult(decodedResponse), pokemonNames, pokemonIds);
-      for (int i = 1; i < urls.length; i++) {
-        List<String> pokemonNamesTemp = [];
-        List<String> pokemonIdsTemp = [];
-        var response = await http.get(urls[i]);
-        var decodedResponse = json.decode(response.body);
-        _fillPokemonNamesAndIds(
-            _getResult(decodedResponse), pokemonNamesTemp, pokemonIdsTemp);
-        _andWithPokemonNamesAndIds(pokemonNamesTemp, pokemonIdsTemp);
-      }
-      if (_searchValue.isNotEmpty) _filterBySearchValue();
-      _applySort();
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorGettingPokemon = true;
-          _isGettingPokemon = false;
-        });
-      }
-    }
-  }
 
   void _showModalBottomSheet() {
     var tempSearchValue = _searchValue;
@@ -435,43 +280,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
         );
       },
     );
-  }
-
-  void _fillFilter(Uri url, List list) async {
-    final response = await http.get(url);
-    final decodedResponse = json.decode(response.body);
-    final results = decodedResponse['results'];
-
-    for (final result in results) {
-      setState(() {
-        list.add(result['name']);
-      });
-    }
-  }
-
-  void _fillFilters() {
-    try {
-      final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
-      final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
-      final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
-      final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
-
-      _fillFilter(colorUrl, _colors);
-      _fillFilter(typeUrl, _types);
-      _fillFilter(habitatUrl, _habitats);
-      _fillFilter(pokedexUrl, _pokedexes);
-
-      setState(() {
-        _isFillingFilters = false;
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isFillingFilters = false;
-          _errorFillingFilters = true;
-        });
-      }
-    }
   }
 
   String get _queryResultText {
