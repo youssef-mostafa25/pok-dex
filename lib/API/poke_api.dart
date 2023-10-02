@@ -213,7 +213,7 @@ class PokeAPI implements PokeApiInterface {
     for (final entry in entries) {
       String url = getPokemonUrl(entry);
       List<String> segments = url.split("/");
-      pokemonIdsList.add(segments[segments.length - 2] as int);
+      pokemonIdsList.add(int.parse(segments[segments.length - 2]));
     }
     pokemonIdsList.sort((a, b) => (a).compareTo(b));
     return pokemonIdsList;
@@ -323,8 +323,8 @@ class PokeAPI implements PokeApiInterface {
     var pokemonNumbers = fillPokemonIds(getResultsMap(decodedResponse));
     List<Pokemon> pokemon = [];
     for (final pokemonNumber in pokemonNumbers) {
-      pokemon
-          .add(await createPokemon(pokemonNumber as String, true, false, null));
+      pokemon.add(
+          await createPokemon(pokemonNumber.toString(), true, false, null));
     }
     Pokemon.applySort(pokemon, Sort.idAscending);
     //   if (mounted) {
@@ -383,7 +383,7 @@ class PokeAPI implements PokeApiInterface {
     for (final abilityMap in abilitiesMap) {
       final name = abilityMap['ability']['name'];
       final slot = abilityMap['slot'].toString();
-      final ability = Ability(name, slot as int);
+      final ability = Ability(name, int.parse(slot));
       abilities.add(ability);
     }
 
@@ -463,7 +463,7 @@ class PokeAPI implements PokeApiInterface {
             : Colors.red);
     final String evoloutionChainUrl =
         pokemonSpecies == null ? '' : pokemonSpecies['evolution_chain']['url'];
-    final List<String> varietiesUrl =
+    final List varietiesMap =
         pokemonSpecies == null ? '' : pokemonSpecies['varieties'];
     final List<List<Pokemon>> evoloutionChain =
         isVariety || isForPokemonItem || pokemonSpecies == null
@@ -472,7 +472,7 @@ class PokeAPI implements PokeApiInterface {
     final List<Pokemon> varieties =
         isVariety || isForPokemonItem || pokemonSpecies == null
             ? []
-            : await getVarieties(pokemonSpecies['varieties'] as List, color);
+            : await getVarieties(varietiesMap, color);
     final String flavourText =
         pokemonSpecies == null ? '' : getRandomFlavourText(pokemonSpecies);
     final String type = getPokemonTypes(pokemon);
@@ -508,7 +508,7 @@ class PokeAPI implements PokeApiInterface {
       isVariety,
       color,
       evoloutionChainUrl,
-      varietiesUrl,
+      varietiesMap,
       evoloutionChain,
       varieties,
       flavourText,

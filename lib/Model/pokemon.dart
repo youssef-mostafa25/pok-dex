@@ -5,18 +5,18 @@ import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/Model/static_data.dart';
 
 class Pokemon {
-  const Pokemon(
+  Pokemon(
       this.name,
       this.number,
       this.imageUrl,
       this.isVariety,
       this.color,
       this.evoloutionChainUrl,
-      this.varietiesUrl,
+      this.varietiesMap,
       this.evoloutionChain,
       this.varieties,
       this.flavourText,
-      this.type,
+      this.types,
       this.generation,
       this.eggGroup,
       this.growthRate,
@@ -31,11 +31,11 @@ class Pokemon {
   final bool isVariety;
   final Color color;
   final String evoloutionChainUrl;
-  final List<String> varietiesUrl;
-  final List<List<Pokemon>> evoloutionChain;
-  final List<Pokemon> varieties;
+  final List varietiesMap;
+  List<List<Pokemon>> evoloutionChain;
+  List<Pokemon> varieties;
   final String flavourText;
-  final String type;
+  final String types;
   final String generation;
   final String eggGroup;
   final String growthRate;

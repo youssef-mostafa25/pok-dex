@@ -311,26 +311,10 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     return result.substring(0, result.length - 1);
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void loadPokemon() async {
     final api = PokeAPI();
     try {
-      setState(() {});
-      api.fillFilters(_colors, _types, _habitats, _pokedexes);
-      setState(() {
-        _isFillingFilters = false;
-      });
-    } catch (e) {
-      _isFillingFilters = false;
-      _errorFillingFilters = true;
-    }
-
-    try {
-      setState(() {
-        _isGettingPokemon = true;
-      });
-      api.loadPokemon();
+      pokemon = await api.loadPokemon();
       setState(() {
         _isGettingPokemon = false;
       });
@@ -341,8 +325,25 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    final api = PokeAPI();
+    try {
+      api.fillFilters(_colors, _types, _habitats, _pokedexes);
+      setState(() {
+        _isFillingFilters = false;
+      });
+    } catch (e) {
+      _isFillingFilters = false;
+      _errorFillingFilters = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget content;
+
+    loadPokemon();
 
     if (_errorGettingPokemon) {
       content = const SizedBox(
