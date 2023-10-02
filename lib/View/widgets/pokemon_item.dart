@@ -11,13 +11,13 @@ class PokemonItem extends StatefulWidget {
     this.pokemonId,
     required this.isHero,
     required this.isSamePokemon,
-    this.variety,
+    this.pokemon,
   });
 
   final int? pokemonId;
   final bool isHero;
   final bool isSamePokemon;
-  final Pokemon? variety;
+  final Pokemon? pokemon;
 
   @override
   State<PokemonItem> createState() => _PokemonItemState();
@@ -33,27 +33,33 @@ class _PokemonItemState extends State<PokemonItem> {
     try {
       pokemon = await api.createPokemon(
           widget.pokemonId.toString(), true, false, null);
-      setState(() {
-        _isGettingPokemon = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isGettingPokemon = false;
-        _errorGettingPokemon = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = false;
+          _errorGettingPokemon = true;
+        });
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.variety == null) {
+    if (widget.pokemon == null) {
       getPokemon();
     } else {
-      pokemon = widget.variety;
-      setState(() {
-        _isGettingPokemon = false;
-      });
+      pokemon = widget.pokemon;
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = false;
+        });
+      }
     }
   }
 

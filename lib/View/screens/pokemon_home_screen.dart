@@ -100,9 +100,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<Sort>(
                                     value: _sortBy,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempSortBy = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempSortBy = value!;
+                                        });
+                                      }
                                     },
                                     items: Sort.values
                                         .map<DropdownMenuItem<Sort>>(
@@ -132,9 +134,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _color,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempColor = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempColor = value!;
+                                        });
+                                      }
                                     },
                                     items: _colors
                                         .map<DropdownMenuItem<String>>((value) {
@@ -157,9 +161,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _type,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempType = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempType = value!;
+                                        });
+                                      }
                                     },
                                     items: _types
                                         .map<DropdownMenuItem<String>>((value) {
@@ -187,9 +193,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _habitat,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempHabitat = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempHabitat = value!;
+                                        });
+                                      }
                                     },
                                     items: _habitats
                                         .map<DropdownMenuItem<String>>((value) {
@@ -213,9 +221,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _pokedex,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempPokedex = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempPokedex = value!;
+                                        });
+                                      }
                                     },
                                     items: _pokedexes
                                         .map<DropdownMenuItem<String>>((value) {
@@ -241,22 +251,28 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    setState(() {
-                                      _searchValue = tempSearchValue;
-                                      _sortBy = tempSortBy;
-                                      _color = tempColor;
-                                      _type = tempType;
-                                      _habitat = tempHabitat;
-                                      _pokedex = tempPokedex;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        _searchValue = tempSearchValue;
+                                        _sortBy = tempSortBy;
+                                        _color = tempColor;
+                                        _type = tempType;
+                                        _habitat = tempHabitat;
+                                        _pokedex = tempPokedex;
+                                      });
+                                    }
                                     try {
-                                      setState(() {
-                                        _isGettingPokemon = true;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          _isGettingPokemon = true;
+                                        });
+                                      }
                                       api.loadPokemon();
-                                      setState(() {
-                                        _isGettingPokemon = false;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          _isGettingPokemon = false;
+                                        });
+                                      }
                                     } catch (e) {
                                       _isGettingPokemon = false;
                                       _errorGettingPokemon = true;
@@ -313,13 +329,17 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   void loadPokemon() async {
     final api = PokeAPI();
     try {
-      setState(() {
-        _isGettingPokemon = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = true;
+        });
+      }
       pokemonNamesAndNumbers = await api.loadPokemon();
-      setState(() {
-        _isGettingPokemon = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = false;
+        });
+      }
     } catch (e) {
       _isGettingPokemon = false;
       _errorGettingPokemon = true;
@@ -333,9 +353,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     final api = PokeAPI();
     try {
       api.fillFilters(_colors, _types, _habitats, _pokedexes);
-      setState(() {
-        _isFillingFilters = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isFillingFilters = false;
+        });
+      }
     } catch (e) {
       _isFillingFilters = false;
       _errorFillingFilters = true;

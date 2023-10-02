@@ -20,7 +20,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
               return PokemonItem(
                 isHero: true,
                 isSamePokemon: false,
-                variety: currPokemon,
+                pokemon: currPokemon,
               );
             }).toList(),
           )
@@ -36,7 +36,7 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
                     PokemonItem(
                       isHero: true,
                       isSamePokemon: false,
-                      variety: currPokemon,
+                      pokemon: currPokemon,
                     ),
                     const SizedBox(
                       width: 50,

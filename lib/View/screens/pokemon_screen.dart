@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/API/poke_api.dart';
 import 'package:pokedex/Model/pokemon.dart';
+import 'package:pokedex/View/widgets/pokemon_item.dart';
 import 'package:pokedex/View/widgets/pokemon_table.dart';
 import 'package:pokedex/View/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -29,28 +30,36 @@ class _PokemonScreenState extends State<PokemonScreen> {
 
   void loadPokemonVarietiesAndEvoChains() async {
     try {
-      widget.pokemon.evoloutionChain =
+      widget.pokemon.evoloutionChains =
           await api.getEvoloutionChain(widget.pokemon.evoloutionChainUrl);
-      setState(() {
-        _isGettingEvoChain = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingEvoChain = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isGettingEvoChain = false;
-        _errorGettingEvolution = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingEvoChain = false;
+          _errorGettingEvolution = true;
+        });
+      }
     }
     try {
       widget.pokemon.varieties = await api.getVarieties(
           widget.pokemon.varietiesMap, widget.pokemon.color);
-      setState(() {
-        _isGettingVarieties = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingVarieties = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isGettingVarieties = false;
-        _errorGettingVarieties = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isGettingVarieties = false;
+          _errorGettingVarieties = true;
+        });
+      }
     }
   }
 
@@ -67,30 +76,41 @@ class _PokemonScreenState extends State<PokemonScreen> {
     final abilities = widget.pokemon.abilities;
     final moves = widget.pokemon.moves;
     final stats = widget.pokemon.stats;
-    Widget evoloutionChain = GradientText(
-      'No Evoloution Chain',
-      textAlign: TextAlign.center,
-      style: GoogleFonts.sedgwickAveDisplay(
-        fontSize: 30.0,
-      ),
-      colors: const [
-        Color.fromRGBO(117, 117, 117, 1), // Darker gray
-        Color.fromRGBO(158, 158, 158, 1), // Dark gray
-        Color.fromRGBO(189, 189, 189, 1), // Slightly lighter gray
-        Color.fromRGBO(189, 189, 189, 1), // Dark gray
-        Color.fromRGBO(158, 158, 158, 1), // Darker gray
-      ],
-    );
+    List<List<Widget>> evoloutionChains = [];
     if (!widget.pokemon.isVariety) {
       if (_errorGettingEvolution) {
-        evoloutionChain = const Text('Something went wrong');
+        evoloutionChains = [
+          [const Text('Something went wrong')]
+        ];
       } else {
         if (_isGettingEvoChain) {
-          evoloutionChain = const Center(
-            child: CircularProgressIndicator(),
-          );
+          evoloutionChains = [
+            [
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            ]
+          ];
         } else {
-          // getEvoloutionChain();
+          evoloutionChains = [];
+          for (final chain in widget.pokemon.evoloutionChains) {
+            List<Widget> currChain = [];
+            for (final pokemon in chain) {
+              currChain.add(
+                SizedBox(
+                  width: 100,
+                  child: PokemonItem(
+                    isHero: false,
+                    isSamePokemon: !(pokemon.name == widget.pokemon.name),
+                    pokemon: pokemon,
+                  ),
+                ),
+              );
+              currChain.add(const Icon(Icons.arrow_right_alt_rounded));
+            }
+            currChain.removeLast();
+            evoloutionChains.add(currChain);
+          }
         }
       }
     }
@@ -143,9 +163,13 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   child: image,
                 ),
                 if (!widget.pokemon.isVariety)
-                  Text(
-                    widget.pokemon.flavourText,
-                    style: GoogleFonts.handlee(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.pokemon.flavourText,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.handlee(fontSize: 16),
+                    ),
                   ),
                 const SizedBox(height: 50),
                 PokemonTable(
@@ -211,9 +235,34 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 //     tableName: 'Stats',
                 //   ),
                 // if (stats.isNotEmpty) const SizedBox(height: 70),
-                if (!widget.pokemon.isVariety) evoloutionChain,
-                if (!widget.pokemon.isVariety) const SizedBox(height: 70),
+                if (!widget.pokemon.isVariety && !_isGettingEvoChain)
+                  GradientText(
+                    widget.pokemon.varieties.isEmpty
+                        ? 'No Evoloution Chain'
+                        : widget.pokemon.varieties.length > 1
+                            ? 'Evoloution Chains'
+                            : 'Evoloution Chain',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.sedgwickAveDisplay(
+                      fontSize: 30.0,
+                    ),
+                    colors: const [
+                      Color.fromRGBO(117, 117, 117, 1), // Darker gray
+                      Color.fromRGBO(158, 158, 158, 1), // Dark gray
+                      Color.fromRGBO(189, 189, 189, 1), // Slightly lighter gray
+                      Color.fromRGBO(189, 189, 189, 1), // Dark gray
+                      Color.fromRGBO(158, 158, 158, 1), // Darker gray
+                    ],
+                  ),
                 if (!widget.pokemon.isVariety)
+                  for (final chain in evoloutionChains)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [for (final widget in chain) widget],
+                    ),
+                if (!widget.pokemon.isVariety) const SizedBox(height: 70),
+                if (!widget.pokemon.isVariety && !_isGettingVarieties)
                   GradientText(
                     widget.pokemon.varieties.isNotEmpty
                         ? widget.pokemon.varieties.length > 1

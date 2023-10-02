@@ -13,7 +13,7 @@ class Pokemon {
       this.color,
       this.evoloutionChainUrl,
       this.varietiesMap,
-      this.evoloutionChain,
+      this.evoloutionChains,
       this.varieties,
       this.flavourText,
       this.types,
@@ -32,7 +32,7 @@ class Pokemon {
   final Color color;
   final String evoloutionChainUrl;
   final List varietiesMap;
-  List<List<Pokemon>> evoloutionChain;
+  List<List<Pokemon>> evoloutionChains;
   List<Pokemon> varieties;
   final String flavourText;
   final String types;
