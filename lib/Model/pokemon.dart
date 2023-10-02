@@ -11,6 +11,7 @@ class Pokemon {
       this.imageUrl,
       this.isVariety,
       this.color,
+      this.evoloutionChainAndVarietiesUrl,
       this.evoloutionChain,
       this.varieties,
       this.flavourText,
@@ -28,6 +29,7 @@ class Pokemon {
   final String imageUrl;
   final bool isVariety;
   final Color color;
+  final Map<String, Object> evoloutionChainAndVarietiesUrl;
   final List<List<Pokemon>> evoloutionChain;
   final List<Pokemon> varieties;
   final String flavourText;
@@ -40,7 +42,7 @@ class Pokemon {
   final List<Move> moves;
   final List<Stat> stats;
 
-  void filterBySearchValue(List<Pokemon> pokemon, String searchValue) {
+  static void filterBySearchValue(List<Pokemon> pokemon, String searchValue) {
     for (int i = 0; i < pokemon.length; i++) {
       if (!pokemon[i].name.contains(searchValue)) {
         pokemon.removeAt(i);
@@ -49,7 +51,7 @@ class Pokemon {
     }
   }
 
-  void applySort(List<Pokemon> pokemon, Sort sortBy) {
+  static void applySort(List<Pokemon> pokemon, Sort sortBy) {
     if (sortBy == Sort.idAscending || sortBy == Sort.idDescending) {
       if (sortBy == Sort.idAscending) {
         pokemon.sort((a, b) => (a.number).compareTo(b.number));

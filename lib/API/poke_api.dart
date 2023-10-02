@@ -51,9 +51,9 @@ class PokeAPI implements PokeApiInterface {
   }
 
   @override
-  Future<List<List<Pokemon>>> getEvoloutionChain(Map pokemonSpecies) async {
-    final evoloutionUrl = pokemonSpecies['evolution_chain']['url'];
-    List<String> segments = evoloutionUrl.split("/");
+  Future<List<List<Pokemon>>> getEvoloutionChain(
+      String evoloutionChainUrl) async {
+    List<String> segments = evoloutionChainUrl.split("/");
     String evoloutionIndex = segments[segments.length - 2];
 
     var url =
@@ -92,8 +92,8 @@ class PokeAPI implements PokeApiInterface {
   }
 
   @override
-  Future<List<Pokemon>> getVarieties(Map pokemonSpecies) async {
-    final List varietiesList = pokemonSpecies['varieties'];
+  Future<List<Pokemon>> getVarieties(
+      List varietiesList, Color pokemonColor) async {
     List<int> pokemonIndecies = [];
     List segments;
     int index;
@@ -107,8 +107,8 @@ class PokeAPI implements PokeApiInterface {
     }
     List<Pokemon> pokemonVarieties = [];
     for (final pokemonIndex in pokemonIndecies) {
-      Pokemon pokemon = await createPokemon(pokemonIndex.toString(), true, true,
-          colorMap[pokemonSpecies['color']['name']] ?? Colors.red);
+      Pokemon pokemon = await createPokemon(
+          pokemonIndex.toString(), true, true, pokemonColor);
       pokemonVarieties.add(pokemon);
     }
     return pokemonVarieties;
@@ -184,16 +184,8 @@ class PokeAPI implements PokeApiInterface {
     // }
   }
 
-  String _getPokemonNameByEntry(Map entry) {
-    // ignore: prefer_if_null_operators
-    return entry['name'] != null
-        ? entry['name']
-        : entry['pokemon'] != null
-            ? entry['pokemon']['name']
-            : entry['pokemon_species']['name'];
-  }
-
-  String _getPokemonUrlByEntry(Map entry) {
+  @override
+  String getPokemonUrl(Map entry) {
     // ignore: prefer_if_null_operators
     return entry['url'] != null
         ? entry['url']
@@ -202,33 +194,44 @@ class PokeAPI implements PokeApiInterface {
             : entry['pokemon_species']['url'];
   }
 
-  void _fillPokemonNamesAndIds(List entries, List<String> pokemonNamesList,
-      List<String> pokemonIdsList) {
+  @override
+  List<int> fillPokemonIds(List entries) {
+    List<int> pokemonIdsList = [];
     for (final entry in entries) {
-      pokemonNamesList.add(_getPokemonNameByEntry(entry));
-      String url = _getPokemonUrlByEntry(entry);
+      String url = getPokemonUrl(entry);
       List<String> segments = url.split("/");
-      pokemonIdsList.add(segments[segments.length - 2]);
+      pokemonIdsList.add(segments[segments.length - 2] as int);
     }
+    pokemonIdsList.sort((a, b) => (a).compareTo(b));
+    return pokemonIdsList;
   }
 
-  void _andWithPokemonNamesAndIds(
-      List<String> pokemonNamesTemp, List<String> pokemonIdsTemp) {
-    List<String> pokemonNamesAfterAnding = [];
-    List<String> pokemonIdsAfterAnding = [];
-    for (final pokemonId in pokemonIds) {
-      for (final pokemonIdTemp in pokemonIdsTemp) {
-        if (pokemonId.compareTo(pokemonIdTemp) == 0) {
-          pokemonNamesAfterAnding.add(pokemonIdTemp);
-          pokemonIdsAfterAnding.add(pokemonId);
+  @override
+  List<int> andPokemonIndexLists(
+      List<int> pokemonIndexListOne, List<int> pokemonIndexListTwo) {
+    List<int> pokemonListAfterAnding = [];
+
+    for (int i = 0; i < pokemonIndexListOne.length; i++) {
+      final pokemonNumber = pokemonIndexListOne[i];
+      for (int j = 0; j < pokemonIndexListTwo.length; j++) {
+        final pokemonTempNumber = pokemonIndexListOne[j];
+        if (pokemonNumber < pokemonTempNumber) {
+          i++;
+        }
+        if (pokemonNumber > pokemonTempNumber) {
+          j++;
+        } else {
+          pokemonListAfterAnding.add(pokemonIndexListOne[i]);
+          i++;
+          j++;
         }
       }
     }
-    pokemonNames = pokemonNamesAfterAnding;
-    pokemonIds = pokemonIdsAfterAnding;
+    return pokemonListAfterAnding;
   }
 
-  List _getResult(Map decodedResponse) {
+  @override
+  List getResultsMap(Map decodedResponse) {
     return decodedResponse['results'] ??
         decodedResponse['pokemon_species'] ??
         decodedResponse['pokemon'] ??
@@ -236,8 +239,13 @@ class PokeAPI implements PokeApiInterface {
   }
 
   @override
-  Future<List<Pokemon>> getPokemonAfterFilter(
-      String color, String type, String habitat, String pokedex) async {
+  Future<List<Pokemon>> getPokemonAfterFiltersSearchAndSort(
+      String color,
+      String type,
+      String habitat,
+      String pokedex,
+      String searchValue,
+      Sort sortBy) async {
     // setState(() {
     //   _isGettingPokemon = true;
     // });
@@ -258,19 +266,24 @@ class PokeAPI implements PokeApiInterface {
     }
     var response = await http.get(urls[0]);
     var decodedResponse = json.decode(response.body);
-    _fillPokemonNamesAndIds(
-        _getResult(decodedResponse), pokemonNames, pokemonIds);
+    var pokemonNumbersOne = fillPokemonIds(getResultsMap(decodedResponse));
     for (int i = 1; i < urls.length; i++) {
-      List<String> pokemonNamesTemp = [];
-      List<String> pokemonIdsTemp = [];
       var response = await http.get(urls[i]);
       var decodedResponse = json.decode(response.body);
-      _fillPokemonNamesAndIds(
-          _getResult(decodedResponse), pokemonNamesTemp, pokemonIdsTemp);
-      _andWithPokemonNamesAndIds(pokemonNamesTemp, pokemonIdsTemp);
+      final pokemonNumbersTwo =
+          fillPokemonIds(getResultsMap(decodedResponse));
+      pokemonNumbersOne =
+          andPokemonIndexLists(pokemonNumbersOne, pokemonNumbersTwo);
     }
-    if (_searchValue.isNotEmpty) _filterBySearchValue();
-    _applySort();
+    List<Pokemon> pokemon = [];
+    for (final pokemonNumber in pokemonNumbersOne) {
+      pokemon
+          .add(await createPokemon(pokemonNumber as String, true, false, null));
+    }
+    if (searchValue.isNotEmpty) {
+      Pokemon.filterBySearchValue(pokemon, searchValue);
+    }
+    Pokemon.applySort(pokemon, sortBy);
     //   if (mounted) {
     //     setState(() {
     //       _isGettingPokemon = false;
@@ -284,6 +297,7 @@ class PokeAPI implements PokeApiInterface {
     //     });
     //   }
     // }
+    return pokemon;
   }
 
   @override
@@ -366,6 +380,7 @@ class PokeAPI implements PokeApiInterface {
       final name = statMap['stat']['name'];
       final base = statMap['base_stat'].toString();
       final stat = Stat(name, base);
+      stats.add(stat);
     }
 
     return stats;
@@ -403,14 +418,22 @@ class PokeAPI implements PokeApiInterface {
                 colorMap[pokemonSpecies['color']['name']] != null
             ? colorMap[pokemonSpecies['color']['name']]!
             : Colors.red);
+    final Map<String, Object> evoloutionChainAndVarietiesUrl =
+        pokemonSpecies == null
+            ? {'evoloution_chain': '', 'varieties': []}
+            : {
+                'evoloution_chain': pokemonSpecies['evolution_chain']['url'],
+                'varieties': pokemonSpecies['varieties']
+              };
     final List<List<Pokemon>> evoloutionChain =
         isVariety || isForPokemonItem || pokemonSpecies == null
             ? []
-            : await getEvoloutionChain(pokemonSpecies);
+            : await getEvoloutionChain(
+                evoloutionChainAndVarietiesUrl['evoloution_chain'] as String);
     final List<Pokemon> varieties =
         isVariety || isForPokemonItem || pokemonSpecies == null
             ? []
-            : await getVarieties(pokemonSpecies);
+            : await getVarieties(pokemonSpecies['varieties'] as List, color);
     final String flavourText =
         pokemonSpecies == null ? '' : getRandomFlavourText(pokemonSpecies);
     final String type = getPokemonTypes(pokemon);
@@ -445,6 +468,7 @@ class PokeAPI implements PokeApiInterface {
       imageUrl,
       isVariety,
       color,
+      evoloutionChainAndVarietiesUrl,
       evoloutionChain,
       varieties,
       flavourText,
