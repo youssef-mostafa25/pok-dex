@@ -539,7 +539,7 @@ class PokeAPI implements PokeApiInterface {
     final String evoloutionChainUrl =
         pokemonSpecies == null ? '' : pokemonSpecies['evolution_chain']['url'];
     final List varietiesMap =
-        pokemonSpecies == null ? '' : pokemonSpecies['varieties'];
+        pokemonSpecies == null ? [] : pokemonSpecies['varieties'];
     final List<List<Pokemon>> evoloutionChain =
         isVariety || isForPokemonItem || pokemonSpecies == null
             ? []

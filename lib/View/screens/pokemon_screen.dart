@@ -142,6 +142,12 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   tag: widget.pokemon.number,
                   child: image,
                 ),
+                if (!widget.pokemon.isVariety)
+                  Text(
+                    widget.pokemon.flavourText,
+                    style: GoogleFonts.handlee(),
+                  ),
+                const SizedBox(height: 50),
                 PokemonTable(
                     entries: [
                       [
@@ -159,8 +165,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     ],
                     pokemonColor: widget.pokemon.color,
                     tableName: 'Pokémon Details'),
-                const SizedBox(height: 50),
-                if (!widget.pokemon.isVariety) Text(widget.pokemon.flavourText),
                 const SizedBox(height: 50),
                 if (!widget.pokemon.isVariety)
                   PokemonTable(
@@ -212,7 +216,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 if (!widget.pokemon.isVariety)
                   GradientText(
                     widget.pokemon.varieties.isNotEmpty
-                        ? 'Varities'
+                        ? widget.pokemon.varieties.length > 1
+                            ? 'Varities'
+                            : 'Variety'
                         : 'No Varities',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.sedgwickAveDisplay(
@@ -224,6 +230,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       Color(0xFF0000ff),
                     ],
                   ),
+                if (_isGettingVarieties) const CircularProgressIndicator(),
                 if (!widget.pokemon.isVariety &&
                     !_isGettingVarieties &&
                     !_errorGettingVarieties &&
