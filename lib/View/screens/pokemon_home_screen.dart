@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokedex/API/poke_api.dart';
+import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/static_data.dart';
 import 'package:pokedex/View/widgets/pokemon_grid.dart';
 
@@ -15,19 +15,18 @@ class PokemonHomeScreen extends StatefulWidget {
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _isGettingPokemon = true;
   var _errorGettingPokemon = false;
-  List<String> pokemonNames = [];
-  List<String> pokemonIds = [];
+  List<Pokemon> pokemon = [];
   var _isFillingFilters = true;
   var _errorFillingFilters = false;
   String _searchValue = '';
   Sort _sortBy = Sort.idAscending;
-  final List _colors = ['all'];
+  final List<String> _colors = ['all'];
   String _color = 'all';
-  final List _types = ['all'];
+  final List<String> _types = ['all'];
   String _type = 'all';
-  final List _habitats = ['all'];
+  final List<String> _habitats = ['all'];
   String _habitat = 'all';
-  final List _pokedexes = ['all'];
+  final List<String> _pokedexes = ['all'];
   String _pokedex = 'all';
 
   void _showModalBottomSheet() {
@@ -38,6 +37,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     var tempHabitat = _habitat;
     var tempPokedex = _pokedex;
     final deviceWidth = MediaQuery.of(context).size.width;
+    final api = PokeAPI();
 
     showModalBottomSheet(
       useSafeArea: true,
@@ -250,7 +250,18 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                       _habitat = tempHabitat;
                                       _pokedex = tempPokedex;
                                     });
-                                    _loadPokemon();
+                                    try {
+                                      setState(() {
+                                        _isGettingPokemon = true;
+                                      });
+                                      api.loadPokemon();
+                                      setState(() {
+                                        _isGettingPokemon = false;
+                                      });
+                                    } catch (e) {
+                                      _isGettingPokemon = false;
+                                      _errorGettingPokemon = true;
+                                    }
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -303,8 +314,30 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fillFilters();
-    _loadPokemon();
+    final api = PokeAPI();
+    try {
+      setState(() {});
+      api.fillFilters(_colors, _types, _habitats, _pokedexes);
+      setState(() {
+        _isFillingFilters = false;
+      });
+    } catch (e) {
+      _isFillingFilters = false;
+      _errorFillingFilters = true;
+    }
+
+    try {
+      setState(() {
+        _isGettingPokemon = true;
+      });
+      api.loadPokemon();
+      setState(() {
+        _isGettingPokemon = false;
+      });
+    } catch (e) {
+      _isGettingPokemon = false;
+      _errorGettingPokemon = true;
+    }
   }
 
   @override
@@ -345,10 +378,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   style: GoogleFonts.handlee(fontSize: 17),
                 )),
           PokemonGrid(
-            pokemonNamesOrIds:
-                _sortBy == Sort.idAscending || _sortBy == Sort.idDescending
-                    ? pokemonIds
-                    : pokemonNames,
+            pokemon: pokemon,
           ),
         ],
       );

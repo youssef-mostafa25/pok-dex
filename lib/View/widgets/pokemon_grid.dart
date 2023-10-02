@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/View/widgets/pokemon_item.dart';
 
 class PokemonGrid extends StatelessWidget {
   const PokemonGrid({
     super.key,
-    required this.pokemonNamesOrIds,
+    required this.pokemon,
   });
 
-  final List<String> pokemonNamesOrIds;
+  final List<Pokemon> pokemon;
 
   @override
   Widget build(BuildContext context) {
-    return pokemonNamesOrIds.isEmpty
+    return pokemon.isEmpty
         ? SizedBox(
             width: double.infinity,
             child: Center(
@@ -27,13 +28,12 @@ class PokemonGrid extends StatelessWidget {
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3),
-              itemCount: pokemonNamesOrIds.length,
+              itemCount: pokemon.length,
               itemBuilder: (context, index) {
                 return GridTile(
                     child: PokemonItem(
-                  pokemonNameOrId: pokemonNamesOrIds[index],
+                  pokemon: pokemon[index],
                   isHero: true,
-                  isVariety: false,
                   isSamePokemon: false,
                 ));
               },

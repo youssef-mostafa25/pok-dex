@@ -8,18 +8,14 @@ import 'package:pokedex/Model/static_data.dart';
 abstract class PokeApiInterface {
   List<Uri> getFilterUrls(
       String color, String type, String habitat, String pokedex);
-  Future<List<Pokemon>> getPokemonAfterFiltersSearchAndSort(
-      String color,
-      String type,
-      String habitat,
-      String pokedexString,
-      String searchValue,
-      Sort sortBy);
+  Future<List<Pokemon>> loadPokemonAfterFilters(String color, String type,
+      String habitat, String pokedexString, String searchValue, Sort sortBy);
+  Future<List<Pokemon>> loadPokemon();
   void fillFilter(Uri url, List<String> list);
   void fillFilters(List<String> colors, List<String> types,
       List<String> habitats, List<String> pokedexes);
-  Future<Map> getPokemon(String pokemonNameOrId);
-  Future<Map> getPokemonSpecies(String pokemonNameOrId);
+  Future<Map> getPokemonMap(String pokemonNameOrId);
+  Future<Map> getPokemonSpeciesMap(String pokemonNameOrId);
   Future<Pokemon> createPokemon(String pokemonNameOrId, bool isForPokemonItem,
       bool? isPokemonVariety, Color? varietyColor);
   Future<List<List<Pokemon>>> getEvoloutionChain(String evoloutionChainUrl);
@@ -35,4 +31,6 @@ abstract class PokeApiInterface {
   List<int> andPokemonIndexLists(
       List<int> pokemonIndexListOne, List<int> pokemonIndexListTwo);
   List getResultsMap(Map decodedResponse);
+  Future<List<Pokemon>> getAllPokemon(List<String> pokemonNamesOrIds,
+      bool isForPokemonItem, bool? isPokemonVariety, Color? varietyColor);
 }

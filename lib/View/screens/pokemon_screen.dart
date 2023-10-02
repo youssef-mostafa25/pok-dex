@@ -1,11 +1,9 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokedex/API/poke_api.dart';
+import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/static_data.dart';
-import 'package:pokedex/View/widgets/pokemon_item.dart';
 import 'package:pokedex/View/widgets/pokemon_table.dart';
 import 'package:pokedex/View/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -14,60 +12,61 @@ class PokemonScreen extends StatefulWidget {
   const PokemonScreen({
     super.key,
     required this.pokemon,
-    this.pokemonSpecies,
-    required this.isVariety,
-    this.originalColor,
   });
 
-  final Map pokemon;
-  final Map? pokemonSpecies;
-  final bool isVariety;
-  final Color? originalColor;
+  final Pokemon pokemon;
 
   @override
   State<PokemonScreen> createState() => _PokemonScreenState();
 }
 
 class _PokemonScreenState extends State<PokemonScreen> {
-  Widget? optionalEvoloutionChain;
   var _isGettingEvoChain = true;
-  var _errorEvolution = false;
-  Widget? randomText;
-  List<int>? varieties;
+  var _errorGettingEvolution = false;
+  List<List<Pokemon>>? evoloutionChain;
+  var _isGettingVarieties = true;
+  var _errorGettingVarieties = false;
+  List<Pokemon>? varieties;
+  Widget? flavourText;
+  final api = PokeAPI();
 
-  List<int>? get _varietiesList {
-    final List varietiesList = widget.pokemonSpecies!['varieties'];
-    List<int> result = [];
-    List segments;
-    int index;
-    for (final variety in varietiesList) {
-      String url = variety['pokemon']['url'];
-      segments = url.split("/");
-      index = int.parse(segments[segments.length - 2]);
-      if (variety['is_default'] == false) {
-        result.add(index);
-      }
-    }
-    return result.isNotEmpty ? result : null;
-  }
+  void getPokemonVarietiesList()
 
   @override
-  void initState() {
+  void initState() async {
     super.initState();
-    if (!widget.isVariety) {
-      _getEvoloution();
+    if (!widget.pokemon.isVariety) {
+      try {
+        evoloutionChain =
+            await api.getEvoloutionChain(widget.pokemon.evoloutionChainUrl);
+        setState(() {
+          _isGettingEvoChain = false;
+        });
+      } catch (e) {
+        setState(() {
+          _isGettingEvoChain = false;
+          _errorGettingEvolution = true;
+        });
+      }
+      try {
+        getPokemonVarietiesList();
+        setState(() {
+          _isGettingVarieties = false;
+        });
+      } catch (e) {
+        setState(() {
+          _isGettingVarieties = false;
+          _errorGettingVarieties = true;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final abilities = _abilities;
-    final moves = _moves;
-    final stats = _stats;
-    if (!widget.isVariety) {
-      varieties = _varietiesList;
-      randomText = _randomFlavourText;
-    }
+    final abilities = widget.pokemon.abilities;
+    final moves = widget.pokemon.moves;
+    final stats = widget.pokemon.stats;
     Widget evoloutionChain = GradientText(
       'No Evoloution Chain',
       textAlign: TextAlign.center,
@@ -83,7 +82,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
       ],
     );
     if (!widget.isVariety) {
-      if (_errorEvolution) {
+      if (_errorGettingEvolution) {
         evoloutionChain = const Text('Something went wrong');
       } else {
         if (_isGettingEvoChain) {
@@ -252,7 +251,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   ),
                 if (!widget.isVariety && varieties != null)
                   PokemonVarietiesSliderRow(
-                      pokemonIndecies: varieties!, originalColor: pokemonColor),
+                      pokemon: varieties!, originalColor: pokemonColor),
                 const SizedBox(height: 80)
               ],
             ),

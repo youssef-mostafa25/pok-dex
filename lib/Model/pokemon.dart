@@ -11,7 +11,8 @@ class Pokemon {
       this.imageUrl,
       this.isVariety,
       this.color,
-      this.evoloutionChainAndVarietiesUrl,
+      this.evoloutionChainUrl,
+      this.varietiesUrl,
       this.evoloutionChain,
       this.varieties,
       this.flavourText,
@@ -29,7 +30,8 @@ class Pokemon {
   final String imageUrl;
   final bool isVariety;
   final Color color;
-  final Map<String, Object> evoloutionChainAndVarietiesUrl;
+  final String evoloutionChainUrl;
+  final List<String> varietiesUrl;
   final List<List<Pokemon>> evoloutionChain;
   final List<Pokemon> varieties;
   final String flavourText;
