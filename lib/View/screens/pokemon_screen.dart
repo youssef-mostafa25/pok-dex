@@ -27,34 +27,38 @@ class _PokemonScreenState extends State<PokemonScreen> {
   Widget? flavourText;
   final api = PokeAPI();
 
+  void loadPokemonVarietiesAndEvoChains() async {
+    try {
+      widget.pokemon.evoloutionChain =
+          await api.getEvoloutionChain(widget.pokemon.evoloutionChainUrl);
+      setState(() {
+        _isGettingEvoChain = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isGettingEvoChain = false;
+        _errorGettingEvolution = true;
+      });
+    }
+    try {
+      widget.pokemon.varieties = await api.getVarieties(
+          widget.pokemon.varietiesMap, widget.pokemon.color);
+      setState(() {
+        _isGettingVarieties = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isGettingVarieties = false;
+        _errorGettingVarieties = true;
+      });
+    }
+  }
+
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     if (!widget.pokemon.isVariety) {
-      try {
-        widget.pokemon.evoloutionChain =
-            await api.getEvoloutionChain(widget.pokemon.evoloutionChainUrl);
-        setState(() {
-          _isGettingEvoChain = false;
-        });
-      } catch (e) {
-        setState(() {
-          _isGettingEvoChain = false;
-          _errorGettingEvolution = true;
-        });
-      }
-      try {
-        widget.pokemon.varieties = await api.getVarieties(
-            widget.pokemon.varietiesMap, widget.pokemon.color);
-        setState(() {
-          _isGettingVarieties = false;
-        });
-      } catch (e) {
-        setState(() {
-          _isGettingVarieties = false;
-          _errorGettingVarieties = true;
-        });
-      }
+      loadPokemonVarietiesAndEvoChains();
     }
   }
 
@@ -86,7 +90,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
             child: CircularProgressIndicator(),
           );
         } else {
-          // evo chain loop
+          // getEvoloutionChain();
         }
       }
     }

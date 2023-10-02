@@ -8,9 +8,15 @@ import 'package:pokedex/Model/static_data.dart';
 abstract class PokeApiInterface {
   List<Uri> getFilterUrls(
       String color, String type, String habitat, String pokedex);
-  Future<List<Pokemon>> loadPokemonAfterFilters(String color, String type,
-      String habitat, String pokedexString, String searchValue, Sort sortBy);
-  Future<List<Pokemon>> loadPokemon();
+  void applySort(Map<int, String> pokemonNamesAndNumbers, Sort sortBy);
+  Future<Map<int, String>> loadPokemonNamesAndIdsAfterFilters(
+      String color,
+      String type,
+      String habitat,
+      String pokedexString,
+      String searchValue,
+      Sort sortBy);
+  Future<Map<int, String>> loadPokemon();
   void fillFilter(Uri url, List<String> list);
   void fillFilters(List<String> colors, List<String> types,
       List<String> habitats, List<String> pokedexes);
@@ -27,9 +33,11 @@ abstract class PokeApiInterface {
   List<Move> getMoves(Map pokemon);
   List<Stat> getStats(Map pokemon);
   String getPokemonUrl(Map entry);
-  List<int> fillPokemonIds(List entries);
-  List<int> andPokemonIndexLists(
-      List<int> pokemonIndexListOne, List<int> pokemonIndexListTwo);
+  String getPokemonName(Map entry);
+  Map<int, String> fillPokemonNamesAndIds(List entries);
+  Map<int, String> andPokemonNamesAndNumbersMaps(
+      Map<int, String> pokemonIndexListOne,
+      Map<int, String> pokemonIndexListTwo);
   List getResultsMap(Map decodedResponse);
   Future<List<Pokemon>> getAllPokemon(List<String> pokemonNamesOrIds,
       bool isForPokemonItem, bool? isPokemonVariety, Color? varietyColor);

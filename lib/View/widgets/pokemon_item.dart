@@ -1,25 +1,74 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokedex/API/poke_api.dart';
 import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/View/screens/pokemon_screen.dart';
 
-class PokemonItem extends StatelessWidget {
+class PokemonItem extends StatefulWidget {
   const PokemonItem({
     super.key,
-    required this.pokemon,
+    this.pokemonId,
     required this.isHero,
     required this.isSamePokemon,
+    this.variety,
   });
 
-  final Pokemon pokemon;
+  final int? pokemonId;
   final bool isHero;
   final bool isSamePokemon;
+  final Pokemon? variety;
+
+  @override
+  State<PokemonItem> createState() => _PokemonItemState();
+}
+
+class _PokemonItemState extends State<PokemonItem> {
+  Pokemon? pokemon;
+  var _isGettingPokemon = true;
+  var _errorGettingPokemon = false;
+  final api = PokeAPI();
+
+  void getPokemon() async {
+    try {
+      pokemon = await api.createPokemon(
+          widget.pokemonId.toString(), true, false, null);
+      setState(() {
+        _isGettingPokemon = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isGettingPokemon = false;
+        _errorGettingPokemon = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.variety == null) {
+      getPokemon();
+    } else {
+      pokemon = widget.variety;
+      setState(() {
+        _isGettingPokemon = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isGettingPokemon) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (_errorGettingPokemon) {
+      return const Column(
+        children: [Icon(Icons.error), Text('Something\nwent wrong')],
+      );
+    }
+
     String imageUrl = '';
-    imageUrl = pokemon.imageUrl;
+    imageUrl = pokemon!.imageUrl;
 
     Widget image = CachedNetworkImage(
       imageUrl: imageUrl,
@@ -30,9 +79,9 @@ class PokemonItem extends StatelessWidget {
     );
 
     Widget text;
-    if (isHero) {
+    if (widget.isHero) {
       image = Hero(
-        tag: pokemon.number,
+        tag: pokemon!.number,
         child: SizedBox(
           width: 100,
           child: image,
@@ -40,17 +89,17 @@ class PokemonItem extends StatelessWidget {
       );
     }
     text = Text(
-      pokemon.name,
+      pokemon!.name,
       style: GoogleFonts.handlee(fontSize: 15),
     );
     return GestureDetector(
-      onTap: !isSamePokemon
+      onTap: !widget.isSamePokemon
           ? () {
-              if (isHero) {
+              if (widget.isHero) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PokemonScreen(
-                      pokemon: pokemon,
+                      pokemon: pokemon!,
                     ),
                   ),
                 );
@@ -58,7 +107,7 @@ class PokemonItem extends StatelessWidget {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => PokemonScreen(
-                      pokemon: pokemon,
+                      pokemon: pokemon!,
                     ),
                   ),
                 );

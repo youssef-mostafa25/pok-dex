@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/API/poke_api.dart';
-import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/static_data.dart';
 import 'package:pokedex/View/widgets/pokemon_grid.dart';
 
@@ -15,7 +14,7 @@ class PokemonHomeScreen extends StatefulWidget {
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _isGettingPokemon = true;
   var _errorGettingPokemon = false;
-  List<Pokemon> pokemon = [];
+  Map<int, String> pokemonNamesAndNumbers = {};
   var _isFillingFilters = true;
   var _errorFillingFilters = false;
   String _searchValue = '';
@@ -314,7 +313,10 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   void loadPokemon() async {
     final api = PokeAPI();
     try {
-      pokemon = await api.loadPokemon();
+      setState(() {
+        _isGettingPokemon = true;
+      });
+      pokemonNamesAndNumbers = await api.loadPokemon();
       setState(() {
         _isGettingPokemon = false;
       });
@@ -327,6 +329,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   @override
   void initState() {
     super.initState();
+    loadPokemon();
     final api = PokeAPI();
     try {
       api.fillFilters(_colors, _types, _habitats, _pokedexes);
@@ -342,8 +345,6 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   @override
   Widget build(BuildContext context) {
     Widget content;
-
-    loadPokemon();
 
     if (_errorGettingPokemon) {
       content = const SizedBox(
@@ -379,7 +380,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   style: GoogleFonts.handlee(fontSize: 17),
                 )),
           PokemonGrid(
-            pokemon: pokemon,
+            pokemonNamesAndNumbers: pokemonNamesAndNumbers.keys.toList(),
           ),
         ],
       );

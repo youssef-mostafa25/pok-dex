@@ -43,29 +43,4 @@ class Pokemon {
   final List<Ability> abilities;
   final List<Move> moves;
   final List<Stat> stats;
-
-  static void filterBySearchValue(List<Pokemon> pokemon, String searchValue) {
-    for (int i = 0; i < pokemon.length; i++) {
-      if (!pokemon[i].name.contains(searchValue)) {
-        pokemon.removeAt(i);
-        i--;
-      }
-    }
-  }
-
-  static void applySort(List<Pokemon> pokemon, Sort sortBy) {
-    if (sortBy == Sort.idAscending || sortBy == Sort.idDescending) {
-      if (sortBy == Sort.idAscending) {
-        pokemon.sort((a, b) => (a.number).compareTo(b.number));
-      } else {
-        pokemon.sort((a, b) => (b.number).compareTo(a.number));
-      }
-    } else {
-      if (sortBy == Sort.nameAscending) {
-        pokemon.sort((a, b) => a.name.compareTo(b.name));
-      } else {
-        pokemon.sort((a, b) => b.name.compareTo(a.name));
-      }
-    }
-  }
 }
