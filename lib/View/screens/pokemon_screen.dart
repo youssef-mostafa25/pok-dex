@@ -161,6 +161,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 75,
         backgroundColor: widget.pokemon.color,
         foregroundColor: Colors.white,
         title: Center(
