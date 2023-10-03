@@ -268,9 +268,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 if (stats.isNotEmpty) const SizedBox(height: 70),
                 if (!widget.pokemon.isVariety && !_isGettingEvoChain)
                   GradientText(
-                    widget.pokemon.varieties.isEmpty
+                    widget.pokemon.evoloutionChains.isEmpty
                         ? 'No Evoloution Chain'
-                        : widget.pokemon.varieties.length > 1
+                        : widget.pokemon.evoloutionChains.length > 1
                             ? 'Evoloution Chains'
                             : 'Evoloution Chain',
                     textAlign: TextAlign.center,
