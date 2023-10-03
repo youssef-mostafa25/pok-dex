@@ -312,7 +312,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       Color(0xFF0000ff),
                     ],
                   ),
-                if (_isGettingVarieties) const CircularProgressIndicator(),
+                if (!widget.pokemon.isVariety && _isGettingVarieties)
+                  const CircularProgressIndicator(),
                 if (!widget.pokemon.isVariety &&
                     !_isGettingVarieties &&
                     !_errorGettingVarieties &&
