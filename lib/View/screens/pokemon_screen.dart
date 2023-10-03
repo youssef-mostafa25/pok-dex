@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/API/poke_api.dart';
 import 'package:pokedex/Model/pokemon.dart';
+import 'package:pokedex/Model/pokemon_ability.dart';
+import 'package:pokedex/Model/pokemon_move.dart';
+import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/View/widgets/pokemon_item.dart';
 import 'package:pokedex/View/widgets/pokemon_table.dart';
 import 'package:pokedex/View/widgets/pokemon_varieties_slider.dart';
@@ -61,6 +64,34 @@ class _PokemonScreenState extends State<PokemonScreen> {
         });
       }
     }
+  }
+
+  List<List<Map<String, bool>>> tableMap(
+      List entries, List<String> columnNames) {
+    List<List<Map<String, bool>>> tableMap = [
+      [
+        for (final columnName in columnNames) {columnName: true}
+      ]
+    ];
+    for (final entry in entries) {
+      if (entry is Ability) {
+        tableMap.add([
+          {entry.name: false},
+          {entry.slot.toString(): false}
+        ]);
+      } else if (entry is Move) {
+        tableMap.add([
+          {entry.name: false},
+          {entry.learnMethod: false}
+        ]);
+      } else if (entry is Stat) {
+        tableMap.add([
+          {entry.name: false},
+          {entry.base: false}
+        ]);
+      }
+    }
+    return tableMap;
   }
 
   @override
@@ -214,27 +245,27 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     tableName: 'Pokémon Info',
                   ),
                 if (!widget.pokemon.isVariety) const SizedBox(height: 70),
-                // if (abilities.isNotEmpty)
-                //   PokemonTable(
-                //     entries: tableMap(abilities, ['Name', 'Slot']),
-                //     pokemonColor: widget.pokemon.color,
-                //     tableName: 'Abilities',
-                //   ),
-                // if (abilities.isNotEmpty) const SizedBox(height: 70),
-                // if (moves.isNotEmpty)
-                //   PokemonTable(
-                //     entries: tableMap(moves, ['Name', 'Learn Method']),
-                //     pokemonColor: widget.pokemon.color,
-                //     tableName: 'Moves',
-                //   ),
-                // if (moves.isNotEmpty) const SizedBox(height: 70),
-                // if (stats.isNotEmpty)
-                //   PokemonTable(
-                //     entries: tableMap(stats, ['Name', 'Base']),
-                //     pokemonColor: widget.pokemon.color,
-                //     tableName: 'Stats',
-                //   ),
-                // if (stats.isNotEmpty) const SizedBox(height: 70),
+                if (abilities.isNotEmpty)
+                  PokemonTable(
+                    entries: tableMap(abilities, ['Name', 'Slot']),
+                    pokemonColor: widget.pokemon.color,
+                    tableName: 'Abilities',
+                  ),
+                if (abilities.isNotEmpty) const SizedBox(height: 70),
+                if (moves.isNotEmpty)
+                  PokemonTable(
+                    entries: tableMap(moves, ['Name', 'Learn Method']),
+                    pokemonColor: widget.pokemon.color,
+                    tableName: 'Moves',
+                  ),
+                if (moves.isNotEmpty) const SizedBox(height: 70),
+                if (stats.isNotEmpty)
+                  PokemonTable(
+                    entries: tableMap(stats, ['Name', 'Base']),
+                    pokemonColor: widget.pokemon.color,
+                    tableName: 'Stats',
+                  ),
+                if (stats.isNotEmpty) const SizedBox(height: 70),
                 if (!widget.pokemon.isVariety && !_isGettingEvoChain)
                   GradientText(
                     widget.pokemon.varieties.isEmpty
