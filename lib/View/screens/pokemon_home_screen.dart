@@ -262,7 +262,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                         _pokedex = tempPokedex;
                                       });
                                     }
-                                    loadPokemonAfterFilters();
+                                    loadPokemon();
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -318,26 +318,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
           _isGettingPokemon = true;
         });
       }
-      pokemonItemIdentifierList = await api.loadPokemon();
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = false;
-        });
-      }
-    } catch (e) {
-      _isGettingPokemon = false;
-      _errorGettingPokemon = true;
-    }
-  }
-
-  void loadPokemonAfterFilters() async {
-    try {
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = true;
-        });
-      }
-      pokemonItemIdentifierList = await api.loadPokemonNamesAndIdsAfterFilters(
+      pokemonItemIdentifierList = await api.loadPokemon(
           _color, _type, _habitat, _pokedex, _searchValue, _sortBy);
       if (mounted) {
         setState(() {

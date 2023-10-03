@@ -31,8 +31,8 @@ class _PokemonItemState extends State<PokemonItem> {
 
   void getPokemon() async {
     try {
-      pokemon = await api.createPokemon(
-          widget.pokemonId.toString(), true, false, null);
+      pokemon =
+          await api.getPokemon(widget.pokemonId.toString(), true, false, null);
       if (mounted) {
         setState(() {
           _isGettingPokemon = false;
