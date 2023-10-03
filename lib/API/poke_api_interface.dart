@@ -6,8 +6,7 @@ import 'package:pokedex/Model/static_data.dart';
 abstract class PokeApiInterface {
   Future<List<PokemonItemIdentifier>> loadPokemon(String color, String type,
       String habitat, String pokedexString, String searchValue, Sort sortBy);
-  void fillFilters(List<String> colors, List<String> types,
-      List<String> habitats, List<String> pokedexes);
+  Future<List<String>> getFilter(Uri url);
   Future<Map> getPokemonMap(String pokemonNameOrId);
   Future<Map> getPokemonSpeciesMap(String pokemonNameOrId);
   Future<Pokemon> getPokemon(String pokemonNameOrId, bool isForPokemonItem,

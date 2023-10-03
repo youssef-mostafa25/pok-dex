@@ -20,13 +20,13 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _errorFillingFilters = false;
   String _searchValue = '';
   Sort _sortBy = Sort.idAscending;
-  final List<String> _colors = ['all'];
+  List<String> _colors = ['all'];
   String _color = 'all';
-  final List<String> _types = ['all'];
+  List<String> _types = ['all'];
   String _type = 'all';
-  final List<String> _habitats = ['all'];
+  List<String> _habitats = ['all'];
   String _habitat = 'all';
-  final List<String> _pokedexes = ['all'];
+  List<String> _pokedexes = ['all'];
   String _pokedex = 'all';
   final api = PokeAPI();
 
@@ -331,13 +331,24 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     }
   }
 
+  void getFilters() async {
+    final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
+    final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
+    final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
+    final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
+
+    _colors = await api.getFilter(colorUrl);
+    _types = await api.getFilter(typeUrl);
+    _habitats = await api.getFilter(habitatUrl);
+    _pokedexes = await api.getFilter(pokedexUrl);
+  }
+
   @override
   void initState() {
     super.initState();
     loadPokemon();
-    final api = PokeAPI();
     try {
-      api.fillFilters(_colors, _types, _habitats, _pokedexes);
+      getFilters();
       if (mounted) {
         setState(() {
           _isFillingFilters = false;

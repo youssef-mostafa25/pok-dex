@@ -12,28 +12,18 @@ import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/Model/static_data.dart';
 
 class PokeAPI implements PokeApiInterface {
-  void _fillFilter(Uri url, List<String> list) async {
+  @override
+  Future<List<String>> getFilter(Uri url) async {
+    List<String> list = [];
     final response = await http.get(url);
     final decodedResponse = json.decode(response.body);
     final results = decodedResponse['results'];
 
+    list.add('all');
     for (final result in results) {
       list.add(result['name']);
     }
-  }
-
-  @override
-  void fillFilters(List<String> colors, List<String> types,
-      List<String> habitats, List<String> pokedexes) {
-    final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
-    final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
-    final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
-    final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
-
-    _fillFilter(colorUrl, colors);
-    _fillFilter(typeUrl, types);
-    _fillFilter(habitatUrl, habitats);
-    _fillFilter(pokedexUrl, pokedexes);
+    return list;
   }
 
   @override
