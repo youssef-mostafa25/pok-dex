@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/API/poke_api.dart';
 import 'package:pokedex/Model/pokemon.dart';
-import 'package:pokedex/View/screens/pokemon_screen.dart';
+import 'package:pokedex/view/screens/pokemon_screen.dart';
 
 class PokemonItem extends StatefulWidget {
   const PokemonItem({

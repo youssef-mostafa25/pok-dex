@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/pokemon_item_identifier.dart';
-import 'package:pokedex/View/widgets/pokemon_item.dart';
+import 'package:pokedex/view/widgets/pokemon_item.dart';
 
 class PokemonGrid extends StatelessWidget {
   const PokemonGrid({

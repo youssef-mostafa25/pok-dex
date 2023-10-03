@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex/API/poke_api.dart';
 import 'package:pokedex/Model/pokemon_item_identifier.dart';
 import 'package:pokedex/Model/static_data.dart';
-import 'package:pokedex/View/widgets/pokemon_grid.dart';
+import 'package:pokedex/view/widgets/pokemon_grid.dart';
 
 class PokemonHomeScreen extends StatefulWidget {
   const PokemonHomeScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pokedex/Model/pokemon.dart';
-import 'package:pokedex/View/widgets/pokemon_item.dart';
+import 'package:pokedex/view/widgets/pokemon_item.dart';
 
 class PokemonVarietiesSliderRow extends StatelessWidget {
   const PokemonVarietiesSliderRow({super.key, required this.pokemon});

@@ -6,9 +6,9 @@ import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/pokemon_ability.dart';
 import 'package:pokedex/Model/pokemon_move.dart';
 import 'package:pokedex/Model/pokemon_stat.dart';
-import 'package:pokedex/View/widgets/pokemon_item.dart';
-import 'package:pokedex/View/widgets/pokemon_table.dart';
-import 'package:pokedex/View/widgets/pokemon_varieties_slider.dart';
+import 'package:pokedex/view/widgets/pokemon_item.dart';
+import 'package:pokedex/view/widgets/pokemon_table.dart';
+import 'package:pokedex/view/widgets/pokemon_varieties_slider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PokemonScreen extends StatefulWidget {

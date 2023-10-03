@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pokedex/API/poke_api_interface.dart';
+import 'package:pokedex/api/poke_api_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/pokemon_ability.dart';
