@@ -202,7 +202,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       style: GoogleFonts.handlee(fontSize: 16),
                     ),
                   ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 70),
                 PokemonTable(
                     entries: [
                       [
@@ -244,7 +244,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     pokemonColor: widget.pokemon.color,
                     tableName: 'Pokémon Info',
                   ),
-                if (!widget.pokemon.isVariety) const SizedBox(height: 70),
+                if (!widget.pokemon.isVariety) const SizedBox(height: 50),
                 if (abilities.isNotEmpty)
                   PokemonTable(
                     entries: tableMap(abilities, ['Name', 'Slot']),
@@ -258,7 +258,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                     pokemonColor: widget.pokemon.color,
                     tableName: 'Moves',
                   ),
-                if (moves.isNotEmpty) const SizedBox(height: 70),
+                if (moves.isNotEmpty) const SizedBox(height: 50),
                 if (stats.isNotEmpty)
                   PokemonTable(
                     entries: tableMap(stats, ['Name', 'Base']),
@@ -285,6 +285,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       Color.fromRGBO(158, 158, 158, 1), // Darker gray
                     ],
                   ),
+                if (!widget.pokemon.isVariety && !_isGettingEvoChain)
+                  const SizedBox(height: 20),
                 if (!widget.pokemon.isVariety)
                   for (final chain in evoloutionChains)
                     Row(
@@ -292,7 +294,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [for (final widget in chain) widget],
                     ),
-                if (!widget.pokemon.isVariety) const SizedBox(height: 70),
+                if (!widget.pokemon.isVariety) const SizedBox(height: 50),
                 if (!widget.pokemon.isVariety && !_isGettingVarieties)
                   GradientText(
                     widget.pokemon.varieties.isNotEmpty
