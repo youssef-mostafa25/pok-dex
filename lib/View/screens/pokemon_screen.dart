@@ -132,7 +132,7 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   width: 100,
                   child: PokemonItem(
                     isHero: false,
-                    isSamePokemon: !(pokemon.name == widget.pokemon.name),
+                    isSamePokemon: pokemon.number == widget.pokemon.number,
                     pokemon: pokemon,
                   ),
                 ),
