@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/pokemon_ability.dart';
+import 'package:pokedex/Model/pokemon_item_identifier.dart';
 import 'package:pokedex/Model/pokemon_move.dart';
 import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/Model/static_data.dart';
@@ -8,15 +9,16 @@ import 'package:pokedex/Model/static_data.dart';
 abstract class PokeApiInterface {
   List<Uri> getFilterUrls(
       String color, String type, String habitat, String pokedex);
-  void applySort(Map<int, String> pokemonNamesAndNumbers, Sort sortBy);
-  Future<Map<int, String>> loadPokemonNamesAndIdsAfterFilters(
+  void applySort(
+      List<PokemonItemIdentifier> pokemonNamesAndNumbers, Sort sortBy);
+  Future<List<PokemonItemIdentifier>> loadPokemonNamesAndIdsAfterFilters(
       String color,
       String type,
       String habitat,
       String pokedexString,
       String searchValue,
       Sort sortBy);
-  Future<Map<int, String>> loadPokemon();
+  Future<List<PokemonItemIdentifier>> loadPokemon();
   void fillFilter(Uri url, List<String> list);
   void fillFilters(List<String> colors, List<String> types,
       List<String> habitats, List<String> pokedexes);
@@ -34,10 +36,12 @@ abstract class PokeApiInterface {
   List<Stat> getStats(Map pokemon);
   String getPokemonUrl(Map entry);
   String getPokemonName(Map entry);
-  Map<int, String> fillPokemonNamesAndIds(List entries);
-  Map<int, String> andPokemonNamesAndNumbersMaps(
-      Map<int, String> pokemonIndexListOne,
-      Map<int, String> pokemonIndexListTwo);
+  List<PokemonItemIdentifier> fillPokemonItemIdentifierList(List entries);
+  List<int> getPokemonItemIdentifierNumbers(
+      List<PokemonItemIdentifier> pokemonItemIdentifierList);
+  List<PokemonItemIdentifier> andPokemonItemIdentifierLists(
+      List<PokemonItemIdentifier> pokemonIndexListOne,
+      List<PokemonItemIdentifier> pokemonIndexListTwo);
   List getResultsMap(Map decodedResponse);
   Future<List<Pokemon>> getAllPokemon(List<String> pokemonNamesOrIds,
       bool isForPokemonItem, bool? isPokemonVariety, Color? varietyColor);

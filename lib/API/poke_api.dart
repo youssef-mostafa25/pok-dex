@@ -6,6 +6,7 @@ import 'package:pokedex/API/poke_api_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/Model/pokemon.dart';
 import 'package:pokedex/Model/pokemon_ability.dart';
+import 'package:pokedex/Model/pokemon_item_identifier.dart';
 import 'package:pokedex/Model/pokemon_move.dart';
 import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/Model/static_data.dart';
@@ -218,39 +219,41 @@ class PokeAPI implements PokeApiInterface {
   }
 
   @override
-  Map<int, String> fillPokemonNamesAndIds(List entries) {
-    Map<int, String> pokemonNamesAndIdsTempMap = {};
+  List<PokemonItemIdentifier> fillPokemonItemIdentifierList(List entries) {
+    List<PokemonItemIdentifier> pokemonItemIdentifierList = [];
     for (final entry in entries) {
       String url = getPokemonUrl(entry);
       List<String> segments = url.split("/");
-      pokemonNamesAndIdsTempMap[int.parse(segments[segments.length - 2])] =
-          getPokemonName(entry);
+      if (int.parse(segments[segments.length - 2]) < 10000) {
+        pokemonItemIdentifierList.add(PokemonItemIdentifier(
+            getPokemonName(entry), int.parse(segments[segments.length - 2])));
+      }
     }
-    List keys = pokemonNamesAndIdsTempMap.keys.toList();
-    keys.sort((a, b) => (a).compareTo(b));
-    Map<int, String> pokemonNamesAndIdsMap = {};
-    for (final key in keys) {
-      pokemonNamesAndIdsMap[key] = pokemonNamesAndIdsTempMap[key]!;
-    }
-    return pokemonNamesAndIdsMap;
+    pokemonItemIdentifierList.sort((a, b) => (a.number).compareTo(b.number));
+    return pokemonItemIdentifierList;
   }
 
   @override
-  Map<int, String> andPokemonNamesAndNumbersMaps(
-      Map<int, String> pokemonNamesAndNumbersMapOne,
-      Map<int, String> pokemonNamesAndNumbersMapTwo) {
-    Map<int, String> pokemonNamesAndNumbersAfterAnding = {};
-
-    final mapOneKeys = pokemonNamesAndNumbersMapOne.keys.toList();
-    final mapTwoKeys = pokemonNamesAndNumbersMapTwo.keys.toList();
-    mapOneKeys.map((key) => mapTwoKeys[key]);
-
-    for (final key in mapOneKeys) {
-      pokemonNamesAndNumbersAfterAnding[key] =
-          pokemonNamesAndNumbersMapOne[key]!;
+  List<int> getPokemonItemIdentifierNumbers(
+      List<PokemonItemIdentifier> pokemonItemIdentifierList) {
+    List<int> numbersList = [];
+    for (final pokemonItemIdentifier in pokemonItemIdentifierList) {
+      numbersList.add(pokemonItemIdentifier.number);
     }
+    return numbersList;
+  }
 
-    return pokemonNamesAndNumbersAfterAnding;
+  @override
+  List<PokemonItemIdentifier> andPokemonItemIdentifierLists(
+      List<PokemonItemIdentifier> pokemonItemIdentifierListOne,
+      List<PokemonItemIdentifier> pokemonItemIdentifierListTwo) {
+    pokemonItemIdentifierListOne = pokemonItemIdentifierListOne
+        .where((value) =>
+            getPokemonItemIdentifierNumbers(pokemonItemIdentifierListTwo)
+                .contains(value.number))
+        .toList();
+
+    return pokemonItemIdentifierListOne;
   }
 
   @override
@@ -262,67 +265,25 @@ class PokeAPI implements PokeApiInterface {
   }
 
   @override
-  void applySort(Map<int, String> pokemonNamesAndNumbers, Sort sortBy) {
-    final keys = pokemonNamesAndNumbers.keys.toList();
-    final values = pokemonNamesAndNumbers.values.toList();
+  void applySort(
+      List<PokemonItemIdentifier> pokemonItemIdentifierList, Sort sortBy) {
     if (sortBy == Sort.idAscending || sortBy == Sort.idDescending) {
       if (sortBy == Sort.idAscending) {
-        for (int i = 1; i < keys.length; i++) {
-          if (keys[i - 1].compareTo(keys[i]) > 0) {
-            final tempOne = keys[i - 1];
-            keys[i - 1] = keys[i];
-            keys[i] = tempOne;
-            final tempTwo = values[i - 1];
-            values[i - 1] = values[i];
-            values[i] = tempTwo;
-          }
-        }
+        pokemonItemIdentifierList.sort((a, b) => a.number.compareTo(b.number));
       } else {
-        for (int i = 1; i < keys.length; i++) {
-          if (keys[i - 1].compareTo(keys[i]) < 0) {
-            final tempOne = keys[i - 1];
-            keys[i - 1] = keys[i];
-            keys[i] = tempOne;
-            final tempTwo = values[i - 1];
-            values[i - 1] = values[i];
-            values[i] = tempTwo;
-          }
-        }
+        pokemonItemIdentifierList.sort((a, b) => b.number.compareTo(a.number));
       }
     } else {
       if (sortBy == Sort.nameAscending) {
-        for (int i = 1; i < values.length; i++) {
-          if (values[i - 1].compareTo(values[i]) > 0) {
-            final tempOne = values[i - 1];
-            values[i - 1] = values[i];
-            values[i] = tempOne;
-            final tempTwo = keys[i - 1];
-            keys[i - 1] = keys[i];
-            keys[i] = tempTwo;
-          }
-        }
+        pokemonItemIdentifierList.sort((a, b) => a.name.compareTo(b.name));
       } else {
-        for (int i = 1; i < values.length; i++) {
-          if (values[i - 1].compareTo(values[i]) < 0) {
-            final tempOne = values[i - 1];
-            values[i - 1] = values[i];
-            values[i] = tempOne;
-            final tempTwo = keys[i - 1];
-            keys[i - 1] = keys[i];
-            keys[i] = tempTwo;
-          }
-        }
+        pokemonItemIdentifierList.sort((a, b) => b.name.compareTo(a.name));
       }
     }
-    Map<int, String> pokemonNamesAndNumbersTemp = {};
-    for (int i = 0; i < keys.length; i++) {
-      pokemonNamesAndNumbersTemp[keys[i]] = values[i];
-    }
-    pokemonNamesAndNumbers = pokemonNamesAndNumbersTemp;
   }
 
   @override
-  Future<Map<int, String>> loadPokemonNamesAndIdsAfterFilters(
+  Future<List<PokemonItemIdentifier>> loadPokemonNamesAndIdsAfterFilters(
       String color,
       String type,
       String habitat,
@@ -349,27 +310,25 @@ class PokeAPI implements PokeApiInterface {
     }
     var response = await http.get(urls[0]);
     var decodedResponse = json.decode(response.body);
-    var pokemonNamesAndNumbersOne =
-        fillPokemonNamesAndIds(getResultsMap(decodedResponse));
+    var pokemonItemIdentifierListOne =
+        fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
     for (int i = 1; i < urls.length; i++) {
       var response = await http.get(urls[i]);
       var decodedResponse = json.decode(response.body);
-      final pokemonNamesAndNumbersTwo =
-          fillPokemonNamesAndIds(getResultsMap(decodedResponse));
-      pokemonNamesAndNumbersOne = andPokemonNamesAndNumbersMaps(
-          pokemonNamesAndNumbersOne, pokemonNamesAndNumbersTwo);
+      final pokemonItemIdentifierListTwo =
+          fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
+      pokemonItemIdentifierListOne = andPokemonItemIdentifierLists(
+          pokemonItemIdentifierListOne, pokemonItemIdentifierListTwo);
     }
     if (searchValue.isNotEmpty) {
-      final keys = pokemonNamesAndNumbersOne.keys.toList();
-      for (int i = 0; i < keys.length; i++) {
-        final pokemonName = pokemonNamesAndNumbersOne[keys[i]];
-        if (!pokemonName!.contains(searchValue)) {
-          pokemonNamesAndNumbersOne.remove(keys[i]);
+      for (int i = 0; i < pokemonItemIdentifierListOne.length; i++) {
+        if (!pokemonItemIdentifierListOne[i].name.contains(searchValue)) {
+          pokemonItemIdentifierListOne.removeAt(i);
           i--;
         }
       }
     }
-    applySort(pokemonNamesAndNumbersOne, sortBy);
+    applySort(pokemonItemIdentifierListOne, sortBy);
     //   if (mounted) {
     //     setState(() {
     //       _isGettingPokemon = false;
@@ -383,11 +342,11 @@ class PokeAPI implements PokeApiInterface {
     //     });
     //   }
     // }
-    return pokemonNamesAndNumbersOne;
+    return pokemonItemIdentifierListOne;
   }
 
   @override
-  Future<Map<int, String>> loadPokemon() async {
+  Future<List<PokemonItemIdentifier>> loadPokemon() async {
     // setState(() {
     //   _isGettingPokemon = true;
     // });
@@ -399,9 +358,9 @@ class PokeAPI implements PokeApiInterface {
     );
     var response = await http.get(url);
     var decodedResponse = json.decode(response.body);
-    var pokemonNamesAndNumbers =
-        fillPokemonNamesAndIds(getResultsMap(decodedResponse));
-    applySort(pokemonNamesAndNumbers, Sort.idAscending);
+    var pokemonItemIdentifierList =
+        fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
+    applySort(pokemonItemIdentifierList, Sort.idAscending);
     //   if (mounted) {
     //     setState(() {
     //       _isGettingPokemon = false;
@@ -415,7 +374,7 @@ class PokeAPI implements PokeApiInterface {
     //     });
     //   }
     // }
-    return pokemonNamesAndNumbers;
+    return pokemonItemIdentifierList;
   }
 
   @override

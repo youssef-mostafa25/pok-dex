@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/Model/pokemon_ability.dart';
 import 'package:pokedex/Model/pokemon_move.dart';
 import 'package:pokedex/Model/pokemon_stat.dart';
-import 'package:pokedex/Model/static_data.dart';
 
 class Pokemon {
   Pokemon(
