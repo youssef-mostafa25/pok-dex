@@ -12,8 +12,7 @@ import 'package:pokedex/Model/pokemon_stat.dart';
 import 'package:pokedex/Model/static_data.dart';
 
 class PokeAPI implements PokeApiInterface {
-  @override
-  void fillFilter(Uri url, List<String> list) async {
+  void _fillFilter(Uri url, List<String> list) async {
     final response = await http.get(url);
     final decodedResponse = json.decode(response.body);
     final results = decodedResponse['results'];
@@ -34,10 +33,10 @@ class PokeAPI implements PokeApiInterface {
     final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
     final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
 
-    fillFilter(colorUrl, colors);
-    fillFilter(typeUrl, types);
-    fillFilter(habitatUrl, habitats);
-    fillFilter(pokedexUrl, pokedexes);
+    _fillFilter(colorUrl, colors);
+    _fillFilter(typeUrl, types);
+    _fillFilter(habitatUrl, habitats);
+    _fillFilter(pokedexUrl, pokedexes);
     //   setState(() {
     //       _isFillingFilters = false;
     //     });
@@ -115,8 +114,7 @@ class PokeAPI implements PokeApiInterface {
     return pokemonVarieties;
   }
 
-  @override
-  List<Uri> getFilterUrls(
+  List<Uri> _getFilterUrls(
       String color, String type, String habitat, String pokedex) {
     final List<Uri> result = [];
     if (color != 'all') {
@@ -142,8 +140,7 @@ class PokeAPI implements PokeApiInterface {
     return result;
   }
 
-  @override
-  Future<Map> getPokemonMap(String pokemonNameOrId) async {
+  Future<Map> _getPokemonMap(String pokemonNameOrId) async {
     // try {
     final url = Uri.https('pokeapi.co', 'api/v2/pokemon/$pokemonNameOrId/');
     final response = await http.get(url);
@@ -163,8 +160,7 @@ class PokeAPI implements PokeApiInterface {
     // }
   }
 
-  @override
-  Future<Map> getPokemonSpeciesMap(String pokemonNameOrId) async {
+  Future<Map> _getPokemonSpeciesMap(String pokemonNameOrId) async {
     // try {
     final url =
         Uri.https('pokeapi.co', 'api/v2/pokemon-species/$pokemonNameOrId/');
@@ -185,21 +181,7 @@ class PokeAPI implements PokeApiInterface {
     // }
   }
 
-  @override
-  Future<List<Pokemon>> getAllPokemon(
-      List<String> pokemonNamesOrIds,
-      bool isForPokemonItem,
-      bool? isPokemonVariety,
-      Color? varietyColor) async {
-    List<Pokemon> pokemon = [];
-    for (final pokemonNameOrId in pokemonNamesOrIds) {
-      pokemon.add(await createPokemon(pokemonNameOrId, true, false, null));
-    }
-    return pokemon;
-  }
-
-  @override
-  String getPokemonUrl(Map entry) {
+  String _getPokemonUrl(Map entry) {
     // ignore: prefer_if_null_operators
     return entry['url'] != null
         ? entry['url']
@@ -208,8 +190,7 @@ class PokeAPI implements PokeApiInterface {
             : entry['pokemon_species']['url'];
   }
 
-  @override
-  String getPokemonName(Map entry) {
+  String _getPokemonName(Map entry) {
     // ignore: prefer_if_null_operators
     return entry['name'] != null
         ? entry['name']
@@ -218,23 +199,21 @@ class PokeAPI implements PokeApiInterface {
             : entry['pokemon_species']['name'];
   }
 
-  @override
-  List<PokemonItemIdentifier> fillPokemonItemIdentifierList(List entries) {
+  List<PokemonItemIdentifier> _fillPokemonItemIdentifierList(List entries) {
     List<PokemonItemIdentifier> pokemonItemIdentifierList = [];
     for (final entry in entries) {
-      String url = getPokemonUrl(entry);
+      String url = _getPokemonUrl(entry);
       List<String> segments = url.split("/");
       if (int.parse(segments[segments.length - 2]) < 10000) {
         pokemonItemIdentifierList.add(PokemonItemIdentifier(
-            getPokemonName(entry), int.parse(segments[segments.length - 2])));
+            _getPokemonName(entry), int.parse(segments[segments.length - 2])));
       }
     }
     pokemonItemIdentifierList.sort((a, b) => (a.number).compareTo(b.number));
     return pokemonItemIdentifierList;
   }
 
-  @override
-  List<int> getPokemonItemIdentifierNumbers(
+  List<int> _getPokemonItemIdentifierNumbers(
       List<PokemonItemIdentifier> pokemonItemIdentifierList) {
     List<int> numbersList = [];
     for (final pokemonItemIdentifier in pokemonItemIdentifierList) {
@@ -243,29 +222,26 @@ class PokeAPI implements PokeApiInterface {
     return numbersList;
   }
 
-  @override
-  List<PokemonItemIdentifier> andPokemonItemIdentifierLists(
+  List<PokemonItemIdentifier> _andPokemonItemIdentifierLists(
       List<PokemonItemIdentifier> pokemonItemIdentifierListOne,
       List<PokemonItemIdentifier> pokemonItemIdentifierListTwo) {
     pokemonItemIdentifierListOne = pokemonItemIdentifierListOne
         .where((value) =>
-            getPokemonItemIdentifierNumbers(pokemonItemIdentifierListTwo)
+            _getPokemonItemIdentifierNumbers(pokemonItemIdentifierListTwo)
                 .contains(value.number))
         .toList();
 
     return pokemonItemIdentifierListOne;
   }
 
-  @override
-  List getResultsMap(Map decodedResponse) {
+  List _getResultsMap(Map decodedResponse) {
     return decodedResponse['results'] ??
         decodedResponse['pokemon_species'] ??
         decodedResponse['pokemon'] ??
         decodedResponse['pokemon_entries'];
   }
 
-  @override
-  void applySort(
+  void _applySort(
       List<PokemonItemIdentifier> pokemonItemIdentifierList, Sort sortBy) {
     if (sortBy == Sort.idAscending || sortBy == Sort.idDescending) {
       if (sortBy == Sort.idAscending) {
@@ -294,7 +270,7 @@ class PokeAPI implements PokeApiInterface {
     //   _isGettingPokemon = true;
     // });
     // try {
-    final List<Uri> urls = getFilterUrls(color, type, habitat, pokedex);
+    final List<Uri> urls = _getFilterUrls(color, type, habitat, pokedex);
     if (urls.isEmpty) {
       urls.add(
         Uri.https(
@@ -311,13 +287,13 @@ class PokeAPI implements PokeApiInterface {
     var response = await http.get(urls[0]);
     var decodedResponse = json.decode(response.body);
     var pokemonItemIdentifierListOne =
-        fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
+        _fillPokemonItemIdentifierList(_getResultsMap(decodedResponse));
     for (int i = 1; i < urls.length; i++) {
       var response = await http.get(urls[i]);
       var decodedResponse = json.decode(response.body);
       final pokemonItemIdentifierListTwo =
-          fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
-      pokemonItemIdentifierListOne = andPokemonItemIdentifierLists(
+          _fillPokemonItemIdentifierList(_getResultsMap(decodedResponse));
+      pokemonItemIdentifierListOne = _andPokemonItemIdentifierLists(
           pokemonItemIdentifierListOne, pokemonItemIdentifierListTwo);
     }
     if (searchValue.isNotEmpty) {
@@ -328,7 +304,7 @@ class PokeAPI implements PokeApiInterface {
         }
       }
     }
-    applySort(pokemonItemIdentifierListOne, sortBy);
+    _applySort(pokemonItemIdentifierListOne, sortBy);
     //   if (mounted) {
     //     setState(() {
     //       _isGettingPokemon = false;
@@ -359,8 +335,8 @@ class PokeAPI implements PokeApiInterface {
     var response = await http.get(url);
     var decodedResponse = json.decode(response.body);
     var pokemonItemIdentifierList =
-        fillPokemonItemIdentifierList(getResultsMap(decodedResponse));
-    applySort(pokemonItemIdentifierList, Sort.idAscending);
+        _fillPokemonItemIdentifierList(_getResultsMap(decodedResponse));
+    _applySort(pokemonItemIdentifierList, Sort.idAscending);
     //   if (mounted) {
     //     setState(() {
     //       _isGettingPokemon = false;
@@ -377,8 +353,7 @@ class PokeAPI implements PokeApiInterface {
     return pokemonItemIdentifierList;
   }
 
-  @override
-  String getRandomFlavourText(Map pokemonSpecies) {
+  String _getRandomFlavourText(Map pokemonSpecies) {
     final List flavorTextEntries = pokemonSpecies['flavor_text_entries'];
     final int randomIndex = Random().nextInt(flavorTextEntries.length);
     Map randomMap = flavorTextEntries[randomIndex];
@@ -386,8 +361,7 @@ class PokeAPI implements PokeApiInterface {
     return randomFlavorText;
   }
 
-  @override
-  String getPokemonTypes(Map pokemon) {
+  String _getPokemonTypes(Map pokemon) {
     List types = pokemon['types'];
     var typesResult = '';
     for (final type in types) {
@@ -397,8 +371,7 @@ class PokeAPI implements PokeApiInterface {
     return typesResult;
   }
 
-  @override
-  String getEggGroups(Map pokemonSpecies) {
+  String _getEggGroups(Map pokemonSpecies) {
     final List eggGroupList = pokemonSpecies['egg_groups'];
     var groups = '';
     for (final eggGroup in eggGroupList) {
@@ -408,8 +381,7 @@ class PokeAPI implements PokeApiInterface {
     return groups;
   }
 
-  @override
-  List<Ability> getAbilities(Map pokemon) {
+  List<Ability> _getAbilities(Map pokemon) {
     final List abilitiesMap = pokemon['abilities'];
     if (abilitiesMap.isEmpty) return [];
     List<Ability> abilities = [];
@@ -424,8 +396,7 @@ class PokeAPI implements PokeApiInterface {
     return abilities;
   }
 
-  @override
-  List<Move> getMoves(Map pokemon) {
+  List<Move> _getMoves(Map pokemon) {
     final List movesMap = pokemon['moves'];
     if (movesMap.isEmpty) return [];
     List<Move> moves = [];
@@ -446,8 +417,7 @@ class PokeAPI implements PokeApiInterface {
     return moves;
   }
 
-  @override
-  List<Stat> getStats(Map pokemon) {
+  List<Stat> _getStats(Map pokemon) {
     final List statsMap = pokemon['stats'];
     if (statsMap.isEmpty) return [];
     List<Stat> stats = [];
@@ -466,10 +436,10 @@ class PokeAPI implements PokeApiInterface {
   @override
   Future<Pokemon> createPokemon(String pokemonNameOrId, bool isForPokemonItem,
       bool? isPokemonVariety, Color? varietyColor) async {
-    Map pokemon = await getPokemonMap(pokemonNameOrId);
+    Map pokemon = await _getPokemonMap(pokemonNameOrId);
     Map? pokemonSpecies;
     try {
-      pokemonSpecies = await getPokemonSpeciesMap(pokemonNameOrId);
+      pokemonSpecies = await _getPokemonSpeciesMap(pokemonNameOrId);
       // ignore: empty_catches
     } catch (e) {}
 
@@ -508,8 +478,8 @@ class PokeAPI implements PokeApiInterface {
             ? []
             : await getVarieties(varietiesMap, color);
     final String flavourText =
-        pokemonSpecies == null ? '' : getRandomFlavourText(pokemonSpecies);
-    final String type = getPokemonTypes(pokemon);
+        pokemonSpecies == null ? '' : _getRandomFlavourText(pokemonSpecies);
+    final String type = _getPokemonTypes(pokemon);
     final String generation = pokemonSpecies == null
         ? ''
         : pokemonSpecies['generation'] != null
@@ -519,7 +489,7 @@ class PokeAPI implements PokeApiInterface {
         ? ''
         : pokemonSpecies['egg_groups'] != null &&
                 pokemonSpecies['egg_groups'].isNotEmpty
-            ? getEggGroups(pokemonSpecies)
+            ? _getEggGroups(pokemonSpecies)
             : 'null';
     final String growthRate = pokemonSpecies == null
         ? ''
@@ -531,9 +501,9 @@ class PokeAPI implements PokeApiInterface {
         : pokemonSpecies['habitat'] != null
             ? pokemonSpecies['habitat']['name']
             : 'null';
-    final List<Ability> abilities = getAbilities(pokemon);
-    final List<Move> moves = getMoves(pokemon);
-    final List<Stat> stats = getStats(pokemon);
+    final List<Ability> abilities = _getAbilities(pokemon);
+    final List<Move> moves = _getMoves(pokemon);
+    final List<Stat> stats = _getStats(pokemon);
 
     return Pokemon(
       name,
