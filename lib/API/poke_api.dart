@@ -116,15 +116,13 @@ class PokeAPI implements PokeApiInterface {
     return result;
   }
 
-  @override
-  Future<Map> getPokemonMap(String pokemonNameOrId) async {
+  Future<Map> _getPokemonMap(String pokemonNameOrId) async {
     final url = Uri.https('pokeapi.co', 'api/v2/pokemon/$pokemonNameOrId/');
     final response = await http.get(url);
     return jsonDecode(response.body);
   }
 
-  @override
-  Future<Map> getPokemonSpeciesMap(String pokemonNameOrId) async {
+  Future<Map> _getPokemonSpeciesMap(String pokemonNameOrId) async {
     final url =
         Uri.https('pokeapi.co', 'api/v2/pokemon-species/$pokemonNameOrId/');
     final response = await http.get(url);
@@ -326,10 +324,10 @@ class PokeAPI implements PokeApiInterface {
   @override
   Future<Pokemon> getPokemon(String pokemonNameOrId, bool isForPokemonItem,
       bool? isPokemonVariety, Color? varietyColor) async {
-    Map pokemon = await getPokemonMap(pokemonNameOrId);
+    Map pokemon = await _getPokemonMap(pokemonNameOrId);
     Map? pokemonSpecies;
     try {
-      pokemonSpecies = await getPokemonSpeciesMap(pokemonNameOrId);
+      pokemonSpecies = await _getPokemonSpeciesMap(pokemonNameOrId);
       // ignore: empty_catches
     } catch (e) {}
 

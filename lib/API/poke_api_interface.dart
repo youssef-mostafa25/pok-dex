@@ -7,8 +7,6 @@ abstract class PokeApiInterface {
   Future<List<PokemonItemIdentifier>> loadPokemon(String color, String type,
       String habitat, String pokedexString, String searchValue, Sort sortBy);
   Future<List<String>> getFilter(Uri url);
-  Future<Map> getPokemonMap(String pokemonNameOrId);
-  Future<Map> getPokemonSpeciesMap(String pokemonNameOrId);
   Future<Pokemon> getPokemon(String pokemonNameOrId, bool isForPokemonItem,
       bool? isPokemonVariety, Color? varietyColor);
   Future<List<List<Pokemon>>> getEvoloutionChain(String evoloutionChainUrl);
