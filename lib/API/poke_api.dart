@@ -249,6 +249,7 @@ class PokeAPI implements PokeApiInterface {
 
   String _getRandomFlavourText(Map pokemonSpecies) {
     final List flavorTextEntries = pokemonSpecies['flavor_text_entries'];
+    if (flavorTextEntries.isEmpty) return '';
     final int randomIndex = Random().nextInt(flavorTextEntries.length);
     Map randomMap = flavorTextEntries[randomIndex];
     String randomFlavorText = randomMap['flavor_text'].replaceAll('\n', ' ');
@@ -331,7 +332,7 @@ class PokeAPI implements PokeApiInterface {
       // ignore: empty_catches
     } catch (e) {}
 
-    String imageUrl = 'assets/images/poke_ball_icon.png';
+    String imageUrl = '';
     if (pokemon['sprites']['other']['official-artwork']['front_default'] !=
         null) {
       imageUrl =

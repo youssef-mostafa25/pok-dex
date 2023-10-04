@@ -194,7 +194,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
                   tag: widget.pokemon.number,
                   child: image,
                 ),
-                if (!widget.pokemon.isVariety)
+                if (!widget.pokemon.isVariety &&
+                    widget.pokemon.flavourText.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -203,7 +204,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       style: GoogleFonts.handlee(fontSize: 16),
                     ),
                   ),
-                const SizedBox(height: 70),
+                if (!widget.pokemon.isVariety &&
+                    widget.pokemon.flavourText.isNotEmpty)
+                  const SizedBox(height: 70),
                 PokemonTable(
                     entries: [
                       [

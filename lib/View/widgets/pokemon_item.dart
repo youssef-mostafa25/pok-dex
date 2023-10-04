@@ -76,13 +76,15 @@ class _PokemonItemState extends State<PokemonItem> {
     String imageUrl = '';
     imageUrl = pokemon!.imageUrl;
 
-    Widget image = CachedNetworkImage(
-      imageUrl: imageUrl,
-      placeholder: (context, url) => Image.asset(
-        'assets/images/poke_ball_icon.png',
-      ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    );
+    Widget image = imageUrl.isEmpty
+        ? Image.asset('assets/images/poke_ball_icon.png')
+        : CachedNetworkImage(
+            imageUrl: imageUrl,
+            placeholder: (context, url) => Image.asset(
+              'assets/images/poke_ball_icon.png',
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          );
 
     Widget text;
     if (widget.isHero) {
