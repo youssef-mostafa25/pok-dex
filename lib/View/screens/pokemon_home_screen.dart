@@ -248,8 +248,29 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                             ),
                             const SizedBox(height: 20),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                TextButton(
+                                  onPressed: () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _searchValue = '';
+                                        _sortBy = Sort.idAscending;
+                                        _color = 'all';
+                                        _type = 'all';
+                                        _habitat = 'all';
+                                        _pokedex = 'all';
+                                      });
+                                      loadPokemon();
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Text(
+                                    'reset',
+                                    style: GoogleFonts.handlee(
+                                        color: Colors.red, fontSize: 16),
+                                  ),
+                                ),
+                                const Spacer(),
                                 ElevatedButton(
                                   onPressed: () {
                                     if (mounted) {
