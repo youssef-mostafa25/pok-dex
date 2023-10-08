@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:pokedex/static_data.dart';
-import 'package:pokedex/widgets/pokemon_grid.dart';
+import 'package:pokedex/API/poke_api.dart';
+import 'package:pokedex/Model/pokemon_item_identifier.dart';
+import 'package:pokedex/Model/static_data.dart';
+import 'package:pokedex/view/widgets/pokemon_grid.dart';
 
 class PokemonHomeScreen extends StatefulWidget {
   const PokemonHomeScreen({super.key});
@@ -16,174 +15,20 @@ class PokemonHomeScreen extends StatefulWidget {
 class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
   var _isGettingPokemon = true;
   var _errorGettingPokemon = false;
-  List<String> pokemonNames = [];
-  List<String> pokemonIds = [];
+  List<PokemonItemIdentifier>? pokemonItemIdentifierList;
   var _isFillingFilters = true;
   var _errorFillingFilters = false;
   String _searchValue = '';
   Sort _sortBy = Sort.idAscending;
-  final List _colors = ['all'];
+  List<String> _colors = ['all'];
   String _color = 'all';
-  final List _types = ['all'];
+  List<String> _types = ['all'];
   String _type = 'all';
-  final List _habitats = ['all'];
+  List<String> _habitats = ['all'];
   String _habitat = 'all';
-  final List _pokedexes = ['all'];
+  List<String> _pokedexes = ['all'];
   String _pokedex = 'all';
-
-  String _getPokemonNameByEntry(Map entry) {
-    // ignore: prefer_if_null_operators
-    return entry['name'] != null
-        ? entry['name']
-        : entry['pokemon'] != null
-            ? entry['pokemon']['name']
-            : entry['pokemon_species']['name'];
-  }
-
-  String _getPokemonUrlByEntry(Map entry) {
-    // ignore: prefer_if_null_operators
-    return entry['url'] != null
-        ? entry['url']
-        : entry['pokemon'] != null
-            ? entry['pokemon']['url']
-            : entry['pokemon_species']['url'];
-  }
-
-  void _fillPokemonNamesAndIds(List entries, List<String> pokemonNamesList,
-      List<String> pokemonIdsList) {
-    for (final entry in entries) {
-      pokemonNamesList.add(_getPokemonNameByEntry(entry));
-      String url = _getPokemonUrlByEntry(entry);
-      List<String> segments = url.split("/");
-      pokemonIdsList.add(segments[segments.length - 2]);
-    }
-  }
-
-  List<Uri> get _filterUrls {
-    final List<Uri> result = [];
-    if (_color != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokemon-color/$_color'),
-      );
-    }
-    if (_type != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/type/$_type'),
-      );
-    }
-    if (_habitat != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/$_habitat'),
-      );
-    }
-    if (_pokedex != 'all') {
-      result.add(
-        Uri.https('pokeapi.co', 'api/v2/pokedex/$_pokedex'),
-      );
-    }
-    return result;
-  }
-
-  void _andWithPokemonNamesAndIds(
-      List<String> pokemonNamesTemp, List<String> pokemonIdsTemp) {
-    List<String> pokemonNamesAfterAnding = [];
-    List<String> pokemonIdsAfterAnding = [];
-    for (final pokemonId in pokemonIds) {
-      for (final pokemonIdTemp in pokemonIdsTemp) {
-        if (pokemonId.compareTo(pokemonIdTemp) == 0) {
-          pokemonNamesAfterAnding.add(pokemonIdTemp);
-          pokemonIdsAfterAnding.add(pokemonId);
-        }
-      }
-    }
-    pokemonNames = pokemonNamesAfterAnding;
-    pokemonIds = pokemonIdsAfterAnding;
-  }
-
-  void _filterBySearchValue() {
-    for (int i = 0; i < pokemonNames.length; i++) {
-      if (!pokemonNames[i].contains(_searchValue)) {
-        // todo sort by id and search by value not working together
-        pokemonNames.removeAt(i);
-        pokemonIds.removeAt(i);
-        i--;
-      }
-    }
-  }
-
-  void _applySort() {
-    if (_sortBy == Sort.idAscending || _sortBy == Sort.idDescending) {
-      if (_sortBy == Sort.idAscending) {
-        pokemonIds.sort((a, b) => int.parse(a).compareTo(int.parse(b)));
-      } else {
-        pokemonIds.sort((a, b) => int.parse(b).compareTo(int.parse(a)));
-      }
-    } else {
-      if (_sortBy == Sort.nameAscending) {
-        pokemonNames.sort((a, b) => a.compareTo(b));
-      } else {
-        pokemonNames.sort((a, b) => b.compareTo(a));
-      }
-    }
-  }
-
-  List _getResult(Map decodedResponse) {
-    return decodedResponse['results'] ??
-        decodedResponse['pokemon_species'] ??
-        decodedResponse['pokemon'] ??
-        decodedResponse['pokemon_entries'];
-  }
-
-  void _loadPokemon() async {
-    setState(() {
-      _isGettingPokemon = true;
-    });
-    pokemonIds = [];
-    pokemonNames = [];
-    try {
-      final List<Uri> urls = _filterUrls;
-      if (urls.isEmpty) {
-        urls.add(
-          Uri.https(
-            'pokeapi.co',
-            'api/v2/pokemon-species',
-            {
-              'limit': '100000',
-              'offset': '0',
-              'queryParamWithQuestionMark': '?',
-            },
-          ),
-        );
-      }
-      var response = await http.get(urls[0]);
-      var decodedResponse = json.decode(response.body);
-      _fillPokemonNamesAndIds(
-          _getResult(decodedResponse), pokemonNames, pokemonIds);
-      for (int i = 1; i < urls.length; i++) {
-        List<String> pokemonNamesTemp = [];
-        List<String> pokemonIdsTemp = [];
-        var response = await http.get(urls[i]);
-        var decodedResponse = json.decode(response.body);
-        _fillPokemonNamesAndIds(
-            _getResult(decodedResponse), pokemonNamesTemp, pokemonIdsTemp);
-        _andWithPokemonNamesAndIds(pokemonNamesTemp, pokemonIdsTemp);
-      }
-      if (_searchValue.isNotEmpty) _filterBySearchValue();
-      _applySort();
-      if (mounted) {
-        setState(() {
-          _isGettingPokemon = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorGettingPokemon = true;
-          _isGettingPokemon = false;
-        });
-      }
-    }
-  }
+  final api = PokeAPI();
 
   void _showModalBottomSheet() {
     var tempSearchValue = _searchValue;
@@ -256,9 +101,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<Sort>(
                                     value: _sortBy,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempSortBy = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempSortBy = value!;
+                                        });
+                                      }
                                     },
                                     items: Sort.values
                                         .map<DropdownMenuItem<Sort>>(
@@ -288,9 +135,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _color,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempColor = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempColor = value!;
+                                        });
+                                      }
                                     },
                                     items: _colors
                                         .map<DropdownMenuItem<String>>((value) {
@@ -313,9 +162,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _type,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempType = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempType = value!;
+                                        });
+                                      }
                                     },
                                     items: _types
                                         .map<DropdownMenuItem<String>>((value) {
@@ -343,9 +194,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _habitat,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempHabitat = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempHabitat = value!;
+                                        });
+                                      }
                                     },
                                     items: _habitats
                                         .map<DropdownMenuItem<String>>((value) {
@@ -369,9 +222,11 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _pokedex,
                                     onChanged: (value) {
-                                      setState(() {
-                                        tempPokedex = value!;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          tempPokedex = value!;
+                                        });
+                                      }
                                     },
                                     items: _pokedexes
                                         .map<DropdownMenuItem<String>>((value) {
@@ -393,19 +248,42 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                             ),
                             const SizedBox(height: 20),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                TextButton(
+                                  onPressed: () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _searchValue = '';
+                                        _sortBy = Sort.idAscending;
+                                        _color = 'all';
+                                        _type = 'all';
+                                        _habitat = 'all';
+                                        _pokedex = 'all';
+                                      });
+                                      loadPokemon();
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Text(
+                                    'reset',
+                                    style: GoogleFonts.handlee(
+                                        color: Colors.red, fontSize: 16),
+                                  ),
+                                ),
+                                const Spacer(),
                                 ElevatedButton(
                                   onPressed: () {
-                                    setState(() {
-                                      _searchValue = tempSearchValue;
-                                      _sortBy = tempSortBy;
-                                      _color = tempColor;
-                                      _type = tempType;
-                                      _habitat = tempHabitat;
-                                      _pokedex = tempPokedex;
-                                    });
-                                    _loadPokemon();
+                                    if (mounted) {
+                                      setState(() {
+                                        _searchValue = tempSearchValue;
+                                        _sortBy = tempSortBy;
+                                        _color = tempColor;
+                                        _type = tempType;
+                                        _habitat = tempHabitat;
+                                        _pokedex = tempPokedex;
+                                      });
+                                    }
+                                    loadPokemon();
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -437,53 +315,15 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     );
   }
 
-  void _fillFilter(Uri url, List list) async {
-    final response = await http.get(url);
-    final decodedResponse = json.decode(response.body);
-    final results = decodedResponse['results'];
-
-    for (final result in results) {
-      setState(() {
-        list.add(result['name']);
-      });
-    }
-  }
-
-  void _fillFilters() {
-    try {
-      final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
-      final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
-      final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
-      final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
-
-      _fillFilter(colorUrl, _colors);
-      _fillFilter(typeUrl, _types);
-      _fillFilter(habitatUrl, _habitats);
-      _fillFilter(pokedexUrl, _pokedexes);
-
-      setState(() {
-        _isFillingFilters = false;
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isFillingFilters = false;
-          _errorFillingFilters = true;
-        });
-      }
-    }
-  }
-
   String get _queryResultText {
     String result = '\nShowing resluts for\n\n';
     if (_searchValue.isNotEmpty) {
-      result += 'search value: \'$_searchValue\'';
+      result += 'search value: \'$_searchValue\'\n';
     }
     if (_color != 'all' ||
         _type != 'all' ||
         _habitat != 'all' ||
         _pokedex != 'all') {
-      if (_searchValue.isNotEmpty) result += '\n';
       if (_color != 'all') result += 'color: \'$_color\'\n';
       if (_type != 'all') result += 'type: \'$_type\'\n';
       if (_habitat != 'all') result += 'habitat: \'$_habitat\'\n';
@@ -492,11 +332,53 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
     return result.substring(0, result.length - 1);
   }
 
+  void loadPokemon() async {
+    try {
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = true;
+        });
+      }
+      pokemonItemIdentifierList = await api.loadPokemon(
+          _color, _type, _habitat, _pokedex, _searchValue, _sortBy);
+      if (mounted) {
+        setState(() {
+          _isGettingPokemon = false;
+        });
+      }
+    } catch (e) {
+      _isGettingPokemon = false;
+      _errorGettingPokemon = true;
+    }
+  }
+
+  void getFilters() async {
+    final colorUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-color/');
+    final typeUrl = Uri.https('pokeapi.co', 'api/v2/type/');
+    final habitatUrl = Uri.https('pokeapi.co', 'api/v2/pokemon-habitat/');
+    final pokedexUrl = Uri.https('pokeapi.co', 'api/v2/pokedex/');
+
+    _colors = await api.getFilter(colorUrl);
+    _types = await api.getFilter(typeUrl);
+    _habitats = await api.getFilter(habitatUrl);
+    _pokedexes = await api.getFilter(pokedexUrl);
+  }
+
   @override
   void initState() {
     super.initState();
-    _fillFilters();
-    _loadPokemon();
+    loadPokemon();
+    try {
+      getFilters();
+      if (mounted) {
+        setState(() {
+          _isFillingFilters = false;
+        });
+      }
+    } catch (e) {
+      _isFillingFilters = false;
+      _errorFillingFilters = true;
+    }
   }
 
   @override
@@ -537,10 +419,7 @@ class _PokemonHomeScreenState extends State<PokemonHomeScreen> {
                   style: GoogleFonts.handlee(fontSize: 17),
                 )),
           PokemonGrid(
-            pokemonNamesOrIds:
-                _sortBy == Sort.idAscending || _sortBy == Sort.idDescending
-                    ? pokemonIds
-                    : pokemonNames,
+            pokemonItemIdentifierList: pokemonItemIdentifierList,
           ),
         ],
       );

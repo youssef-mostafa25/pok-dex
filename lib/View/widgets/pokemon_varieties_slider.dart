@@ -1,29 +1,26 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:pokedex/widgets/pokemon_item.dart';
+import 'package:pokedex/Model/pokemon.dart';
+import 'package:pokedex/view/widgets/pokemon_item.dart';
 
 class PokemonVarietiesSliderRow extends StatelessWidget {
-  const PokemonVarietiesSliderRow(
-      {super.key, required this.pokemonIndecies, required this.originalColor});
+  const PokemonVarietiesSliderRow({super.key, required this.pokemon});
 
-  final List<int> pokemonIndecies;
-  final Color originalColor;
+  final List<Pokemon> pokemon;
 
   @override
   Widget build(BuildContext context) {
-    return pokemonIndecies.length > 2
+    return pokemon.length > 2
         ? CarouselSlider(
             options: CarouselOptions(
               enlargeCenterPage: true,
               viewportFraction: 0.4,
             ),
-            items: pokemonIndecies.map((pokemonIndex) {
+            items: pokemon.map((currPokemon) {
               return PokemonItem(
-                pokemonNameOrId: pokemonIndex.toString(),
                 isHero: true,
-                isVariety: true,
                 isSamePokemon: false,
-                originalColor: originalColor,
+                pokemon: currPokemon,
               );
             }).toList(),
           )
@@ -33,15 +30,13 @@ class PokemonVarietiesSliderRow extends StatelessWidget {
               const SizedBox(
                 width: 50,
               ),
-              for (final pokemonIndex in pokemonIndecies)
+              for (final currPokemon in pokemon)
                 Row(
                   children: [
                     PokemonItem(
-                      pokemonNameOrId: pokemonIndex.toString(),
                       isHero: true,
-                      isVariety: true,
                       isSamePokemon: false,
-                      originalColor: originalColor,
+                      pokemon: currPokemon,
                     ),
                     const SizedBox(
                       width: 50,
