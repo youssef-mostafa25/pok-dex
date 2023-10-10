@@ -16,7 +16,7 @@ class PokemonGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (pokemonItemIdentifierList != 0) {
+    if (pokemonItemIdentifierList != null) {
       return pokemonItemIdentifierList!.isEmpty
           ? SizedBox(
               width: double.infinity,
