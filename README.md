@@ -87,5 +87,5 @@ Available on both Android and iOS devices.
 
 <div>
 <a href="https://github.com/youssef-mostafa25">
-  <img src="https://github.com/youssef-mostafa25.png" width="100" height="100" alt="Your Name" style="border-radius: 50%;">
+  <img src="https://github.com/youssef-mostafa25.png" width="100" height="100" alt="Youssef Hossam" style="border-radius: 50%;">
 </div>
